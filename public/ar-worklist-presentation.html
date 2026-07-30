@@ -428,9 +428,9 @@
 
   <div class="silo-wrap rv d2">
     <div class="silos">
-      <div class="silo"><b>CentralReach</b><small>What we billed, what was paid, dates of service</small></div>
-      <div class="silo"><b>Salesforce</b><small>Which patient, which center and region, account status</small></div>
-      <div class="silo"><b>Denials &amp; rejections</b><small>Why the payer didn't pay: codes, reasons, dates, plus Office Ally rejections</small></div>
+      <div class="silo"><b>CentralReach</b><small>What we billed, what was paid, what was written off, dates of service, days outstanding</small></div>
+      <div class="silo"><b>Salesforce</b><small>Which patient, which center and region, account status, provider name, member ID, tax ID</small></div>
+      <div class="silo"><b>Denials, rejections &amp; CSA</b><small>Why the payer didn't pay: codes, reasons, dates, plus Office Ally rejections; recently added CSA statuses and payer claim #</small></div>
     </div>
     <div class="converge-arrow">→</div>
     <div class="one-list">One claim-level working list<small>joined, categorized, and sorted in the priority order we actually care about</small></div>
@@ -498,7 +498,7 @@
 <section id="priority" data-nav="Prioritization">
   <span class="kicker rv">3 · The prioritized queue</span>
   <h2 class="rv">Every claim gets a priority number. Reps work top-down.</h2>
-  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, oldest first</b>, then underpayments and cleanup queues. Reps don't decide what matters most; the list already did.</p>
+  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, &gt;90 days first</b>, then underpayments and cleanup queues. Reps don't decide what matters most; the list already did.</p>
 
   <div class="card rv d2">
     <h3 style="margin-bottom:12px;">The priority ladder</h3>
@@ -608,7 +608,7 @@
   <div class="metric-grid">
     <div class="card rv d1"><b class="big">Per rep</b><p class="sub" style="margin-top:6px;">Claims assigned · touches this month · follow-ups completed · <b>$ collected per follow-up</b></p></div>
     <div class="card rv d2"><b class="big">Per work type</b><p class="sub" style="margin-top:6px;">Denials reworked, payer projects, rebills, each with touches and average $ moved per touch</p></div>
-    <div class="card rv d3"><b class="big">Per payer</b><p class="sub" style="margin-top:6px;">Where the money is stuck, and whether it's a claim problem or a <b>systemic payer project</b> (e.g. one large payer reconciliation worked as a single project instead of hundreds of touches)</p></div>
+    <div class="card rv d3"><b class="big">Per payer</b><p class="sub" style="margin-top:6px;">Where the money is stuck, and whether it's a claim problem or a <b>systemic payer project</b> (e.g. one large payer reconciliation worked as a single project instead of hundreds of touches); a dedicated payer-projects tab flags systemic issues</p></div>
     <div class="card rv d4"><b class="big">Per denial category</b><p class="sub" style="margin-top:6px;">Authorization, coverage, credentialing: what's driving non-payment and how fast each category resolves</p></div>
   </div>
 
@@ -651,7 +651,7 @@
         for new reporting:
         <ul>
           <li><b>Bad-debt bridge:</b> trace eventual write-offs back to their denial categories, so "we missed 3.5%" becomes "authorization denials in two payers drove X%."</li>
-          <li><b>Early-warning views:</b> claims aging toward write-off risk, flagged while they're still workable.</li>
+          <li><b>Early-warning views:</b> claims aging toward write-off risk, flagged while they're still workable; claims aging toward 90+ days, flagged before they age into the bucket.</li>
           <li><b>Prevention loop:</b> recurring root causes routed upstream (credentialing, authorizations, billing setup) instead of being re-worked claim by claim forever.</li>
         </ul>
         <div class="why">Why it matters</div>
@@ -669,7 +669,7 @@
         on those claims, side by side with the claims our team works.
         <ul>
           <li>Scott and Eric have been building views to describe the internal/outsourced breakout. This tool can supply the observed numbers underneath those views.</li>
-          <li>Current effectiveness calculations aren't fully fleshed out; assignment plus payment data gives us a defensible, automatic basis for the comparison, even without Equalize's touch-level activity.</li>
+          <li>Current effectiveness calculations aren't fully fleshed out, but we're continuing to iterate here to determine how effective ERCM is and what the right staffing mix is between onshore and offshore &mdash; with assignment plus payment data as the defensible, automatic basis.</li>
         </ul>
         <div class="why">Why it matters</div>
         Whether we grow the internal team, expand outsourcing, or rebalance, that decision deserves a measured answer, not an impression.
@@ -686,7 +686,7 @@
         <ul>
           <li>The company is moving its legacy SQL warehouse to BigQuery, and CentralReach is being connected directly to it. Ansh has been driving that build with IT.</li>
           <li>Once that lands, the monthly build becomes a scheduled job over live data: weekly refresh is straightforward, daily is realistic.</li>
-          <li>Fresher data compounds everything else on this list: priorities, follow-ups, and reporting all improve with it.</li>
+          <li>Fresher data compounds everything else on this list: priorities, follow-ups, and reporting all improve with it. It also adds new claims in real time and removes paid and posted claims, which reduces needless statusing.</li>
         </ul>
         <div class="why">Why it matters</div>
         The biggest force multiplier on this list, and the enabling work is already in motion.
@@ -699,7 +699,7 @@
         Today's reporting answers "what happened." A regular cadence of weekly or monthly scorecards
         with agreed KPIs turns the tool from a rear-view mirror into a steering wheel:
         <ul>
-          <li>Set outcome expectations (aged-AR %, resolve rates, $/follow-up) and let the list's priorities be tuned to match them.</li>
+          <li>Set outcome expectations (aged-AR %, resolve rates, $/follow-up, claim backlog) and let the list's priorities be tuned to match them.</li>
           <li>Standing artifacts for finance leadership rather than ad hoc pulls.</li>
         </ul>
         <div class="why">Why it matters</div>
