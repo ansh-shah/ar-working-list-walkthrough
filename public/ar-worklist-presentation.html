@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="boardroom">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AR Working List · Process Walkthrough</title>
+<style>
+  /* ============ THEMES ============ */
+  :root{
+    --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* validated chart palette (light) */
+    --chart-1:#2a78d6; --chart-1-deep:#1c5cab; --chart-1-soft:#cde2fb;
+    --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --good-text:#006300;
+  }
+  html[data-theme="boardroom"]{
+    --bg:#f4f6f9; --surface:#ffffff; --surface-2:#eef2f7;
+    --ink:#101418; --ink-2:#4c5560; --muted:#8a919b;
+    --line:#e2e6ec; --accent:#1c5cab; --accent-soft:#e3edf9; --accent-ink:#ffffff;
+    --radius:10px; --shadow:0 1px 3px rgba(16,20,24,.07),0 8px 24px rgba(16,20,24,.06);
+  }
+  html[data-theme="warm"]{
+    --bg:#faf7f1; --surface:#fffdf8; --surface-2:#f3eee4;
+    --ink:#1c1917; --ink-2:#57534e; --muted:#948f88;
+    --line:#e7e1d5; --accent:#0f766e; --accent-soft:#dcefec; --accent-ink:#ffffff;
+    --radius:14px; --shadow:0 1px 3px rgba(28,25,23,.07),0 10px 28px rgba(28,25,23,.07);
+  }
+  html[data-theme="bold"]{
+    --bg:#f5f4fd; --surface:#ffffff; --surface-2:#edebfa;
+    --ink:#17143a; --ink-2:#4f4b77; --muted:#8d89ad;
+    --line:#e3e0f2; --accent:#5b4bd6; --accent-soft:#e7e3fb; --accent-ink:#ffffff;
+    --radius:16px; --shadow:0 2px 4px rgba(23,20,58,.08),0 12px 32px rgba(23,20,58,.09);
+  }
+  html[data-theme="dark"]{
+    --bg:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --line:#2c2c2a; --accent:#3987e5; --accent-soft:#16283e; --accent-ink:#ffffff;
+    --radius:12px; --shadow:0 1px 3px rgba(0,0,0,.5),0 10px 30px rgba(0,0,0,.45);
+    --chart-1:#3987e5; --chart-1-deep:#5598e7; --chart-1-soft:#184f95;
+    --good-text:#0ca30c;
+  }
+
+  /* ============ BASE ============ */
+  *{box-sizing:border-box; margin:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font); background:var(--bg); color:var(--ink);
+    line-height:1.55; transition:background .3s,color .3s;
+  }
+  main{max-width:1080px; margin:0 auto; padding:0 28px;}
+  section{padding:88px 0 56px; min-height:60vh; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  h1{font-size:clamp(30px,4.6vw,50px); line-height:1.12; letter-spacing:-.02em;}
+  h2{font-size:clamp(23px,3vw,32px); letter-spacing:-.015em; margin-bottom:8px;}
+  h3{font-size:17px; margin-bottom:6px;}
+  p.lead{font-size:18px; color:var(--ink-2); max-width:64ch;}
+  p.note{font-size:13.5px; color:var(--muted); margin-top:14px; max-width:70ch;}
+  .kicker{
+    display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:10px;
+  }
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:20px 22px; transition:background .3s,border-color .3s;
+  }
+  button{
+    font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    border-radius:999px; padding:8px 16px; transition:all .18s;
+  }
+  button:hover{border-color:var(--accent); color:var(--accent);}
+  button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
+  button.primary:hover{filter:brightness(1.1); color:var(--accent-ink);}
+  button:disabled{opacity:.45; cursor:default; pointer-events:none;}
+
+  /* ============ TOP BAR ============ */
+  .topbar{
+    position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:14px;
+    padding:10px 20px; background:color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  }
+  .topbar .brand{font-weight:700; font-size:14px; white-space:nowrap;}
+  .topbar .brand span{color:var(--accent);}
+  .themes{margin-left:auto; display:flex; gap:6px; align-items:center; flex-wrap:wrap;}
+  .themes .lbl{font-size:12px; color:var(--muted); margin-right:2px;}
+  .theme-chip{
+    font-size:12.5px; padding:5px 12px; border-radius:999px; font-weight:600;
+  }
+  .theme-chip.active{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
+
+  /* ============ SIDE NAV DOTS ============ */
+  .dots{
+    position:fixed; right:16px; top:50%; transform:translateY(-50%); z-index:40;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .dots a{
+    width:10px; height:10px; border-radius:50%; background:var(--line);
+    transition:all .25s; position:relative;
+  }
+  .dots a.active{background:var(--accent); transform:scale(1.35);}
+  .dots a:hover::after{
+    content:attr(data-label); position:absolute; right:20px; top:50%; transform:translateY(-50%);
+    background:var(--ink); color:var(--bg); font-size:11.5px; font-weight:600;
+    padding:4px 10px; border-radius:6px; white-space:nowrap;
+  }
+  @media(max-width:900px){.dots{display:none;}}
+
+  /* ============ REVEAL ANIMATION ============ */
+  .rv{opacity:0; transform:translateY(22px); transition:opacity .6s ease,transform .6s ease;}
+  .rv.in{opacity:1; transform:none;}
+  .rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.22s}.rv.d3{transition-delay:.34s}.rv.d4{transition-delay:.46s}
+
+  /* ============ TITLE ============ */
+  #title{display:flex; flex-direction:column; justify-content:center; min-height:86vh;}
+  .title-stats{display:flex; gap:14px; flex-wrap:wrap; margin-top:34px;}
+  .stat{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:14px 20px; min-width:150px;
+  }
+  .stat .v{font-size:27px; font-weight:650; letter-spacing:-.01em;}
+  .stat .l{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .stat .d{font-size:12px; color:var(--good-text); font-weight:600;}
+
+  /* ============ PROBLEM SECTION ============ */
+  .silo-wrap{display:flex; align-items:center; gap:18px; margin-top:30px; flex-wrap:wrap;}
+  .silos{display:flex; flex-direction:column; gap:10px;}
+  .silo{
+    padding:12px 16px; border-radius:var(--radius); border:1px dashed var(--muted);
+    background:var(--surface); font-size:13.5px; max-width:250px;
+    transition:transform .5s, border-color .5s;
+  }
+  .silo b{display:block; font-size:14px;}
+  .silo small{color:var(--muted);}
+  .converge-arrow{font-size:30px; color:var(--accent); flex-shrink:0;}
+  .one-list{
+    padding:22px 26px; border-radius:var(--radius); background:var(--accent);
+    color:var(--accent-ink); font-weight:650; font-size:16px; box-shadow:var(--shadow);
+    max-width:260px;
+  }
+  .one-list small{display:block; font-weight:400; opacity:.85; font-size:12.5px; margin-top:4px;}
+  .pains{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:30px;}
+
+  /* ============ PIPELINE ============ */
+  .pipe{
+    display:flex; gap:0; align-items:stretch; margin-top:26px; overflow-x:auto;
+    padding:10px 2px 18px;
+  }
+  .pcol{display:flex; flex-direction:column; gap:8px; justify-content:center; min-width:158px; flex:1;}
+  .pcol-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); text-align:center; margin-bottom:2px;}
+  .pnode{
+    background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:9px 11px; font-size:12.5px; font-weight:600; text-align:center; cursor:pointer;
+    transition:all .25s; position:relative;
+  }
+  .pnode small{display:block; font-weight:400; color:var(--muted); font-size:11px; line-height:1.35; margin-top:2px;}
+  .pnode:hover{border-color:var(--accent);}
+  .pnode.hot{
+    border-color:var(--accent); background:var(--accent-soft);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .pnode.sel{border-color:var(--accent); background:var(--accent-soft);}
+  .pnode.big{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); padding:16px 12px; font-size:13.5px;}
+  .pnode.big small{color:var(--accent-ink); opacity:.85;}
+  .pnode.big.hot{box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent);}
+  .plink{
+    display:flex; align-items:center; justify-content:center; min-width:30px; color:var(--muted);
+    font-size:19px; flex-shrink:0;
+  }
+  .plink.flow{color:var(--accent); animation:pulseArrow 1.4s infinite;}
+  @keyframes pulseArrow{0%,100%{opacity:.45}50%{opacity:1}}
+  .pipe-detail{
+    margin-top:14px; min-height:74px; font-size:14.5px; color:var(--ink-2);
+    border-left:3px solid var(--accent); padding:10px 16px; background:var(--surface);
+    border-radius:0 var(--radius) var(--radius) 0;
+  }
+  .pipe-detail b{color:var(--ink);}
+  .pipe-controls{display:flex; gap:10px; margin-top:16px; align-items:center;}
+  .pipe-controls .hint{font-size:12.5px; color:var(--muted);}
+
+  /* ============ CHARTS ============ */
+  .chart{margin-top:18px;}
+  .brow{display:grid; grid-template-columns:210px 1fr 86px; align-items:center; gap:10px; padding:4px 0;}
+  .brow .bl{font-size:13px; color:var(--ink-2); text-align:right; line-height:1.25;}
+  .brow .btrack{position:relative; height:20px;}
+  .brow .bar{
+    position:absolute; left:0; top:1px; height:18px; width:0;
+    background:var(--chart-1); border-radius:0 4px 4px 0;
+    transition:width 1s cubic-bezier(.2,.7,.2,1);
+  }
+  .brow .bar.deep{background:var(--chart-1-deep);}
+  .brow .bv{font-size:12.5px; font-weight:600; color:var(--ink-2); font-variant-numeric:tabular-nums;}
+  .brow:hover .bar{filter:brightness(1.12);}
+  .axisline{border-left:1px solid var(--line); position:absolute; top:0; bottom:0; left:0;}
+  .chart-note{font-size:12.5px; color:var(--muted); margin-top:10px;}
+  .chart-flex{display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:26px;}
+  @media(max-width:860px){.chart-flex{grid-template-columns:1fr;}}
+
+  /* ============ WORKLIST DEMO ============ */
+  .demo-table{width:100%; border-collapse:collapse; font-size:13px; margin-top:14px;}
+  .demo-table th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--muted); padding:8px 10px; border-bottom:2px solid var(--line);
+  }
+  .demo-table td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  .demo-table tr:hover td{background:var(--surface-2);}
+  .pill{
+    display:inline-block; font-size:11px; font-weight:700; padding:2.5px 9px; border-radius:999px;
+    background:var(--accent-soft); color:var(--accent); white-space:nowrap;
+  }
+  .pill.p1{background:color-mix(in srgb,var(--critical) 14%, var(--surface)); color:var(--critical);}
+  .pill.p2{background:color-mix(in srgb,var(--serious) 16%, var(--surface)); color:#b4552f;}
+  html[data-theme="dark"] .pill.p2{color:var(--serious);}
+  .demo-table select{
+    font-family:var(--font); font-size:12.5px; padding:5px 8px; border-radius:8px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink); max-width:220px;
+  }
+  .fu-chip{
+    display:inline-block; font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:8px;
+    background:var(--surface-2); color:var(--ink-2); opacity:0; transform:translateY(6px);
+    transition:all .4s;
+  }
+  .fu-chip.show{opacity:1; transform:none;}
+  .fu-chip b{color:var(--good-text);}
+  .money{font-variant-numeric:tabular-nums; text-align:right;}
+
+  /* ============ ARCHIVE SIMULATOR ============ */
+  .sim{margin-top:22px;}
+  .sim-stage{display:grid; grid-template-columns:1fr 300px; gap:24px; align-items:start;}
+  @media(max-width:860px){.sim-stage{grid-template-columns:1fr;}}
+  .day-strip{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .day{
+    width:46px; text-align:center; font-size:11px; padding:7px 0 5px; border-radius:9px;
+    border:1px solid var(--line); background:var(--surface); color:var(--muted);
+    transition:all .3s;
+  }
+  .day b{display:block; font-size:14px; color:var(--ink-2);}
+  .day.today{border-color:var(--accent); background:var(--accent-soft); color:var(--accent);}
+  .day.today b{color:var(--accent);}
+  .day.snapped{border-style:solid; border-color:var(--good); }
+  .day .cam{font-size:11px; visibility:hidden;}
+  .day.snapped .cam{visibility:visible;}
+  .sheet-mini{
+    border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; font-size:12.5px;
+    background:var(--surface);
+  }
+  .sheet-mini .rowline{display:grid; grid-template-columns:1.1fr 1.5fr 1fr; gap:8px; padding:8px 12px; border-bottom:1px solid var(--line);}
+  .sheet-mini .rowline.head{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); background:var(--surface-2); font-weight:700;}
+  .sheet-mini .chg{animation:flashCell 1s;}
+  @keyframes flashCell{0%{background:var(--accent-soft);}100%{background:transparent;}}
+  .stack{position:relative; height:106px; margin-top:10px;}
+  .snapcard{
+    position:absolute; left:0; right:36px; height:48px; border-radius:9px;
+    background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow);
+    font-size:11.5px; padding:8px 12px 5px; color:var(--ink-2); overflow:hidden;
+    transition:all .5s cubic-bezier(.2,.7,.2,1); opacity:0; transform:translateY(-26px) scale(.95);
+  }
+  .snapcard b{font-size:12px; color:var(--ink);}
+  .snapcard.landed{opacity:1; transform:none;}
+  .snapcard.buried{background:var(--surface-2);}
+  .sim-log{font-size:12.5px; color:var(--ink-2); min-height:20px; margin-top:8px;}
+  .server-panel{position:sticky; top:70px;}
+  .server-box{
+    border:1.5px solid var(--line); border-radius:var(--radius); padding:14px 16px;
+    background:var(--surface-2); font-size:13px;
+  }
+  .server-box .srv-title{display:flex; gap:8px; align-items:center; font-weight:700; font-size:13px;}
+  .srv-dot{width:9px; height:9px; border-radius:50%; background:var(--muted);}
+  .srv-dot.on{background:var(--good); animation:blink 1s infinite;}
+  @keyframes blink{50%{opacity:.35;}}
+  .srv-steps{margin:10px 0 0; padding:0; list-style:none;}
+  .srv-steps li{
+    padding:6px 0 6px 26px; position:relative; color:var(--muted); font-size:12.5px;
+    transition:color .3s;
+  }
+  .srv-steps li::before{
+    content:"○"; position:absolute; left:4px; color:var(--muted);
+  }
+  .srv-steps li.doing{color:var(--ink);}
+  .srv-steps li.doing::before{content:"◐"; color:var(--accent);}
+  .srv-steps li.done{color:var(--ink-2);}
+  .srv-steps li.done::before{content:"●"; color:var(--good);}
+  .result-card{
+    margin-top:16px; border:1.5px solid var(--good); border-radius:var(--radius);
+    padding:14px 16px; background:var(--surface); opacity:0; transform:translateY(14px);
+    transition:all .5s; font-size:13px;
+  }
+  .result-card.show{opacity:1; transform:none;}
+  .result-card .cl{
+    font-family:ui-monospace,Consolas,monospace; font-size:12px; background:var(--surface-2);
+    border-radius:8px; padding:8px 10px; margin:8px 0; min-height:34px; color:var(--ink-2);
+    word-break:break-word;
+  }
+  .result-kpis{display:flex; gap:16px; flex-wrap:wrap; margin-top:6px;}
+  .result-kpis .k{font-size:12px; color:var(--muted);}
+  .result-kpis .k b{display:block; font-size:17px; color:var(--ink); font-weight:650;}
+  .result-kpis .k b.up{color:var(--good-text);}
+
+  /* ============ MEASURE SECTION ============ */
+  .metric-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:24px;}
+  .metric-grid .card b.big{font-size:22px; letter-spacing:-.01em;}
+  .metric-grid .card .sub{font-size:12.5px; color:var(--muted);}
+
+  /* ============ FUTURE ============ */
+  .future-list{display:flex; flex-direction:column; gap:12px; margin-top:26px;}
+  .fitem{
+    border:1px solid var(--line); border-radius:var(--radius); background:var(--surface);
+    box-shadow:var(--shadow); overflow:hidden; transition:border-color .25s;
+  }
+  .fitem.open{border-color:var(--accent);}
+  .fhead{
+    display:flex; align-items:center; gap:14px; padding:16px 20px; cursor:pointer; user-select:none;
+  }
+  .fnum{
+    width:34px; height:34px; border-radius:10px; background:var(--accent-soft); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; flex-shrink:0;
+  }
+  .fhead h3{margin:0; font-size:16.5px;}
+  .fhead .tag{margin-left:auto; font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; white-space:nowrap;}
+  .fhead .chev{color:var(--muted); transition:transform .3s; font-size:13px;}
+  .fitem.open .chev{transform:rotate(90deg);}
+  .fbody{
+    max-height:0; overflow:hidden; transition:max-height .45s ease;
+    font-size:14.5px; color:var(--ink-2);
+  }
+  .fbody-inner{padding:2px 20px 18px 68px;}
+  .fbody ul{margin:8px 0 0 18px; padding:0;}
+  .fbody li{margin-bottom:5px;}
+  .fbody .why{
+    font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
+    color:var(--accent); margin-top:12px;
+  }
+  .horizon{display:flex; gap:8px; margin-top:26px; flex-wrap:wrap;}
+  .hz{font-size:12px; padding:5px 12px; border-radius:999px; border:1px solid var(--line); color:var(--muted); font-weight:600;}
+  .hz b{color:var(--ink);}
+
+  /* ============ CLOSING ============ */
+  #close .card{padding:28px 30px;}
+  .ask-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:20px;}
+  footer{padding:30px 0 46px; font-size:12px; color:var(--muted);}
+
+  /* tooltip */
+  #tt{
+    position:fixed; z-index:99; pointer-events:none; background:var(--ink); color:var(--bg);
+    font-size:12px; font-weight:600; padding:6px 10px; border-radius:8px; opacity:0;
+    transition:opacity .15s; max-width:260px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">AR Working List <span>·</span> Process Walkthrough</div>
+  <div class="themes">
+    <span class="lbl">Style:</span>
+    <button class="theme-chip active" data-set-theme="boardroom">Boardroom</button>
+    <button class="theme-chip" data-set-theme="warm">Warm</button>
+    <button class="theme-chip" data-set-theme="bold">Bold</button>
+    <button class="theme-chip" data-set-theme="dark">Dark</button>
+  </div>
+</div>
+
+<nav class="dots" id="dots"></nav>
+<div id="tt"></div>
+
+<main>
+
+<!-- ============ 1. TITLE ============ -->
+<section id="title" data-nav="Overview">
+  <span class="kicker rv">Finance · Special Projects · RCM</span>
+  <h1 class="rv d1">The AR Working List</h1>
+  <p class="lead rv d2" style="margin-top:14px;">
+    One prioritized queue for every open claim we're owed money on. The AR team works it daily,
+    the system measures the work on its own, and it has been running for about a year now.
+    This is a walkthrough of how it works and a conversation about where it goes next.
+  </p>
+  <div class="title-stats">
+    <div class="stat rv d1"><div class="v">99,010</div><div class="l">claims in the May book of work</div></div>
+    <div class="stat rv d2"><div class="v">$157.4M</div><div class="l">insurance outstanding</div></div>
+    <div class="stat rv d3"><div class="v">16</div><div class="l">work queues (15 reps + Equalize RCM)</div></div>
+    <div class="stat rv d4"><div class="v">20,224</div><div class="l">claims touched in first 11 days of May</div></div>
+  </div>
+  <p class="note rv d4">Use ↓ / ↑ arrow keys or the dots on the right to move through sections. Figures are from the May 2026 working list (data as of 5/11/2026).</p>
+</section>
+
+<!-- ============ 2. THE PROBLEM ============ -->
+<section id="problem" data-nav="The problem">
+  <span class="kicker rv">1 · Why it exists</span>
+  <h2 class="rv">Our AR data lived in three places. Our priorities lived in nobody's.</h2>
+  <p class="lead rv d1">Before the working list, an AR rep deciding "what do I work today?" had to reconcile all of this by hand:</p>
+
+  <div class="silo-wrap rv d2">
+    <div class="silos">
+      <div class="silo"><b>CentralReach</b><small>What we billed, what was paid, dates of service</small></div>
+      <div class="silo"><b>Salesforce</b><small>Which patient, which center and region, account status</small></div>
+      <div class="silo"><b>Denials &amp; rejections</b><small>Why the payer didn't pay: codes, reasons, dates, plus Office Ally rejections</small></div>
+    </div>
+    <div class="converge-arrow">→</div>
+    <div class="one-list">One claim-level working list<small>joined, categorized, and sorted in the priority order we actually care about</small></div>
+  </div>
+
+  <div class="pains">
+    <div class="card rv d1"><h3>No shared priority</h3><p style="font-size:13.5px;color:var(--ink-2);">Which matters more, an aged denial or a big underpayment? Every rep answered differently.</p></div>
+    <div class="card rv d2"><h3>No single view</h3><p style="font-size:13.5px;color:var(--ink-2);">A claim's billing, its denial reason, and its patient context never sat on the same row.</p></div>
+    <div class="card rv d3"><h3>No measurement</h3><p style="font-size:13.5px;color:var(--ink-2);">We couldn't say what got worked, when, or whether the work actually moved dollars.</p></div>
+  </div>
+</section>
+
+<!-- ============ 3. PIPELINE ============ -->
+<section id="pipeline" data-nav="How data flows">
+  <span class="kicker rv">2 · How the data flows</span>
+  <h2 class="rv">From five raw feeds to one worked, measured list</h2>
+  <p class="lead rv d1">Click any box for a short description, or press play to follow a claim through the whole pipeline.</p>
+
+  <div class="pipe-controls rv d2">
+    <button class="primary" id="playPipe">▶ Follow a claim through</button>
+    <span class="hint" id="pipeHint">Each month this cycle runs end to end.</span>
+  </div>
+
+  <div class="pipe rv d2" id="pipe">
+    <div class="pcol">
+      <div class="pcol-title">Sources</div>
+      <div class="pnode" data-step="0" data-info="<b>CentralReach billing detail.</b> Every claim we submitted: amounts billed, dates of service, the payer it went to, the rendering provider.">CR claim data<small>billing detail</small></div>
+      <div class="pnode" data-step="0" data-info="<b>CentralReach demographics.</b> Patient and guardian details.">CR demographics</div>
+      <div class="pnode" data-step="0" data-info="<b>Salesforce.</b> The case side: region, center, account status, assigned BCBA, program dates.">Salesforce cases</div>
+      <div class="pnode" data-step="0" data-info="<b>Payer denials.</b> Denial codes, reasons, and dates straight from payer responses.">Denial feed</div>
+      <div class="pnode" data-step="0" data-info="<b>Office Ally rejections.</b> Claims that bounced at Office Ally before the payer ever saw them.">Office Ally rejections</div>
+    </div>
+    <div class="plink" data-flow="1">→</div>
+    <div class="pcol">
+      <div class="pcol-title">Our logic</div>
+      <div class="pnode" data-step="1" data-info="<b>The monthly build.</b> Code we run on a server joins all five feeds into one row per claim, then applies our mapping tables (denial reason to category, payer to bucket, claim ID continuity across rebills) so every claim arrives categorized and consistent.">Monthly build<small>joins + enriches every claim</small></div>
+      <div class="pnode" data-step="1" data-info="<b>Mapping tables.</b> The rulebook we maintain: how denial reasons group into categories, how payer plans roll up, which statuses count as real work, and how a rebilled claim keeps its identity.">Mapping rules<small>our rulebook</small></div>
+    </div>
+    <div class="plink" data-flow="2">→</div>
+    <div class="pcol">
+      <div class="pcol-title">The product</div>
+      <div class="pnode big" data-step="2" data-info="<b>The AR Working List.</b> One row per claim, about 99k this month, each with a priority category, a denial category, aging, and dollars outstanding. Sorted in the order we want it worked.">AR Working List<small>~99k claims, priority-sorted</small></div>
+      <div class="pnode" data-step="2" data-info="<b>Downstream reporting.</b> The same list also feeds aging summaries, denial resolve rates, payment/collection summaries, and the denial forecast.">Also feeds AR &amp; denial reporting</div>
+    </div>
+    <div class="plink" data-flow="3">→</div>
+    <div class="pcol">
+      <div class="pcol-title">Daily work</div>
+      <div class="pnode" data-step="3" data-info="<b>The team's workspace.</b> Each rep gets their own tab showing only their claims. They record a date worked, a status, and notes per touch, and the follow-up date fills itself in based on the status chosen.">16 rep queues<small>each rep sees their slice</small></div>
+      <div class="pnode" data-step="3" data-info="<b>Nightly snapshot.</b> Every night an automated process takes a complete copy of the workspace, so we have a photo of the list for every day of the month.">Nightly archive 📸</div>
+    </div>
+    <div class="plink" data-flow="4">→</div>
+    <div class="pcol">
+      <div class="pcol-title">Measurement</div>
+      <div class="pnode" data-step="4" data-info="<b>Month-end changelog.</b> Code compares each day's snapshot to the day before and condenses a month of copies into one line per claim: every status change, date-stamped, plus touch counts and dollars collected vs. the start of the month.">Change log build<small>a month → one line per claim</small></div>
+      <div class="pnode" data-step="4" data-info="<b>Productivity reporting.</b> Per-rep dashboards: claims assigned, touches, follow-ups, and dollars moved per follow-up, plus summaries by type of work.">Productivity dashboards</div>
+    </div>
+  </div>
+
+  <div class="pipe-detail rv d3" id="pipeDetail">
+    <b>Tip:</b> today this whole journey repeats monthly. One of the future-state questions is how much faster we can spin the loop.
+  </div>
+</section>
+
+<!-- ============ 4. PRIORITIZATION ============ -->
+<section id="priority" data-nav="Prioritization">
+  <span class="kicker rv">3 · The prioritized queue</span>
+  <h2 class="rv">Every claim gets a priority number. Reps work top-down.</h2>
+  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, oldest first</b>, then underpayments and cleanup queues. Here's the May book:</p>
+
+  <div class="chart card rv d2" id="catChart">
+    <h3 style="margin-bottom:10px;">Insurance outstanding by priority category <span style="font-weight:400;color:var(--muted);font-size:12px;">May 2026, $ millions</span></h3>
+    <!-- bars injected by JS -->
+    <div class="chart-note">Categories 8 to 10 (credits, negative payments, not yet billed) net to -$10.9M and are worked as separate cleanup queues. Hover a bar for claim counts.</div>
+  </div>
+
+  <h3 class="rv" style="margin-top:36px;">Try it: the sheet enforces the playbook</h3>
+  <p class="rv d1" style="font-size:14.5px;color:var(--ink-2);max-width:66ch;">
+    Reps type almost nothing. Pick a status below and watch two rules fire: the dropdown only offers
+    statuses valid for that claim's category, and the follow-up date sets itself from the
+    status's built-in timeline (records requested means check back in 4 days, an appeal means 30).
+  </p>
+
+  <div class="card rv d2" style="overflow-x:auto;">
+    <table class="demo-table" id="demoTable">
+      <thead><tr>
+        <th>Claim</th><th>Payer</th><th style="text-align:right">Outstanding</th><th>Priority</th><th>Issue</th><th>Status (you pick)</th><th>Follow-up (auto)</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="chart-note">Illustrative claims, not real patients. In the real sheet these four fields are the only thing reps edit. Everything else arrives read-only.</p>
+  </div>
+</section>
+
+<!-- ============ 5. ARCHIVE + CHANGELOG ============ -->
+<section id="loop" data-nav="Daily archive → changelog">
+  <span class="kicker rv">4 · The part you can't see in the sheet</span>
+  <h2 class="rv">Every night we photograph the list. At month end, code turns the photos into a story.</h2>
+  <p class="lead rv d1">
+    This is how productivity gets measured without anyone self-reporting. Run the simulation:
+    watch a rep work one claim across a month, the nightly archive collect its snapshots,
+    and the month-end build compress it all into one change-log line with computed totals.
+  </p>
+
+  <div class="sim rv d2">
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
+      <button class="primary" id="simRun">▶ Play the month</button>
+      <button id="simBuild" disabled>⚙ Run month-end changelog build</button>
+      <button id="simReset">↺ Reset</button>
+    </div>
+
+    <div class="sim-stage">
+      <div>
+        <div class="day-strip" id="dayStrip"></div>
+
+        <div class="sheet-mini" id="sheetMini">
+          <div class="rowline head"><div>Claim 61-402-887</div><div>Status</div><div>Insurance paid</div></div>
+          <div class="rowline"><div>BCBS TX · $3,412 · Denial (Authorization)</div><div id="smStatus">—</div><div id="smPaid" class="money">$0</div></div>
+        </div>
+        <div class="sim-log" id="simLog">The rep's tab, live. Press play.</div>
+
+        <h3 style="margin-top:20px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;">Nightly archive <span id="snapLbl" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--accent);"></span></h3>
+        <div class="stack" id="snapStack"></div>
+      </div>
+
+      <div class="server-panel">
+        <div class="server-box">
+          <div class="srv-title"><span class="srv-dot" id="srvDot"></span> Month-end build <span style="font-weight:400;color:var(--muted);font-size:11.5px;">(runs on a server)</span></div>
+          <p style="font-size:12px;color:var(--muted);margin-top:6px;">
+            When the month rolls over, our reporting screen (the client) asks a server to run the
+            comparison code across all the nightly copies and send back the computed result.
+          </p>
+          <ul class="srv-steps" id="srvSteps">
+            <li>Load all nightly snapshots for the month</li>
+            <li>Compare each day against the day before</li>
+            <li>Date-stamp every change found</li>
+            <li>Compute totals: touches &amp; $ collected vs. month start</li>
+          </ul>
+        </div>
+
+        <div class="result-card" id="resultCard">
+          <b>Working List Archive: one line for the whole month</b>
+          <div class="cl" id="clString"></div>
+          <div class="result-kpis">
+            <div class="k"><b id="kTouches">0</b>claim touches</div>
+            <div class="k"><b id="kChanges">0</b>status changes</div>
+            <div class="k"><b class="up" id="kPaid">$0</b>paid over month start</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note rv d3">
+    Multiply this by 99,000 claims and 16 queues and the archive becomes the productivity record:
+    what got worked, when, by whom, and what moved as a result. Nobody fills out a timesheet.
+    The data is simply observed.
+  </p>
+</section>
+
+<!-- ============ 6. WHAT IT TELLS US ============ -->
+<section id="measure" data-nav="What it tells us">
+  <span class="kicker rv">5 · What comes out the other side</span>
+  <h2 class="rv">Work measured in dollars, not anecdotes</h2>
+  <p class="lead rv d1">Because every touch and every dollar delta is captured, the reporting layer can answer questions we simply couldn't before:</p>
+
+  <div class="metric-grid">
+    <div class="card rv d1"><b class="big">Per rep</b><p class="sub" style="margin-top:6px;">Claims assigned · touches this month · follow-ups completed · <b>$ collected per follow-up</b></p></div>
+    <div class="card rv d2"><b class="big">Per work type</b><p class="sub" style="margin-top:6px;">Denials reworked, payer projects, rebills, each with touches and average $ moved per touch</p></div>
+    <div class="card rv d3"><b class="big">Per payer</b><p class="sub" style="margin-top:6px;">Where the money is stuck, and whether it's a claim problem or a <b>systemic payer project</b> (e.g. one $2.7M / 766-claim payer reconciliation worked as a single project)</p></div>
+    <div class="card rv d4"><b class="big">Per denial category</b><p class="sub" style="margin-top:6px;">Authorization, coverage, credentialing: what's driving non-payment and how fast each category resolves</p></div>
+  </div>
+
+  <div class="chart-flex">
+    <div class="chart card rv d2" id="payerChart">
+      <h3 style="margin-bottom:10px;">Where the outstanding dollars sit <span style="font-weight:400;color:var(--muted);font-size:12px;">top payers, $ millions</span></h3>
+    </div>
+    <div class="chart card rv d3" id="denialChart">
+      <h3 style="margin-bottom:10px;">Why claims aren't paying <span style="font-weight:400;color:var(--muted);font-size:12px;">open denials by category, claims</span></h3>
+    </div>
+  </div>
+  <p class="note rv d3">The top three payers hold roughly half of all outstanding AR, which is why payer-level projects exist alongside claim-by-claim work.</p>
+</section>
+
+<!-- ============ 7. FUTURE STATE ============ -->
+<section id="future" data-nav="Future state">
+  <span class="kicker rv">6 · Where this goes next</span>
+  <h2 class="rv">A year in, the machine works. Now it can start steering.</h2>
+  <p class="lead rv d1">
+    Five opportunities we'd like Raymond's read on, ordered roughly by how directly they serve
+    the 3.5% bad-debt goal. Click each to expand.
+  </p>
+
+  <div class="horizon rv d2">
+    <span class="hz"><b>Now:</b> running monthly, in production 1 yr</span>
+    <span class="hz"><b>Next:</b> items 1 to 3 build on what exists</span>
+    <span class="hz"><b>Later:</b> items 4 and 5 need partners (IT or vendor)</span>
+  </div>
+
+  <div class="future-list" id="futureList">
+
+    <div class="fitem rv d1">
+      <div class="fhead"><div class="fnum">1</div><h3>The bad-debt lens: reporting our way to 3.5%</h3><span class="tag">Goal-direct</span><span class="chev">▶</span></div>
+      <div class="fbody"><div class="fbody-inner">
+        Bad debt is AR we never managed to collect. This tool sees every dollar of AR before it
+        gets there, already tagged with the reason it's stuck, which makes it a natural engine
+        for new reporting:
+        <ul>
+          <li><b>Bad-debt bridge:</b> trace eventual write-offs back to their denial categories, so "we missed 3.5%" becomes "authorization denials in two payers drove X%."</li>
+          <li><b>Early-warning views:</b> claims aging toward write-off risk, flagged while they're still workable.</li>
+          <li><b>Prevention loop:</b> recurring root causes routed upstream (credentialing, authorizations, billing setup) instead of being re-worked claim by claim forever.</li>
+        </ul>
+        <div class="why">Why it matters</div>
+        The denial categories, aging, and outcomes are already captured. This is largely a reporting build, not a data build.
+      </div></div>
+    </div>
+
+    <div class="fitem rv d2">
+      <div class="fhead"><div class="fnum">2</div><h3>One yardstick: our team vs. Equalize RCM</h3><span class="tag">Effectiveness</span><span class="chev">▶</span></div>
+      <div class="fbody"><div class="fbody-inner">
+        Equalize RCM (sometimes written "ERCM") works a share of our claims and already appears as a
+        queue in the working list, so the same machinery that measures our reps can measure
+        them: touches, resolve rates, and $ collected per follow-up, side by side on identical claims data.
+        <ul>
+          <li>Scott and Eric have been building views to describe the internal/outsourced breakout. This tool can supply the observed numbers underneath those views.</li>
+          <li>Current effectiveness calculations aren't fully fleshed out; the changelog gives us a defensible, automatic basis for them.</li>
+        </ul>
+        <div class="why">Why it matters</div>
+        Whether we grow the internal team, expand outsourcing, or rebalance, that decision deserves a measured answer, not an impression.
+      </div></div>
+    </div>
+
+    <div class="fitem rv d3">
+      <div class="fhead"><div class="fnum">3</div><h3>Fresh data: monthly today, weekly next, then daily</h3><span class="tag">BigQuery</span><span class="chev">▶</span></div>
+      <div class="fbody"><div class="fbody-inner">
+        Today the list rebuilds monthly, so by week three the team is working from aging information.
+        Equalize gets comparable results partly because they run on a substantially better data
+        environment. Fresher data is a real advantage, and right now our vendor has better
+        plumbing than our own team does.
+        <ul>
+          <li>The company is moving its legacy SQL warehouse to BigQuery, and CentralReach is being connected directly to it. Ansh has been driving that build with IT.</li>
+          <li>Once that lands, the monthly build becomes a scheduled job over live data: weekly refresh is straightforward, daily is realistic.</li>
+          <li>Fresher data compounds everything else on this list: priorities, follow-ups, and reporting all improve with it.</li>
+        </ul>
+        <div class="why">Why it matters</div>
+        The biggest force multiplier on this list, and the enabling work is already in motion.
+      </div></div>
+    </div>
+
+    <div class="fitem rv d3">
+      <div class="fhead"><div class="fnum">4</div><h3>Reporting cadence tied to KPIs and goals</h3><span class="tag">Steering</span><span class="chev">▶</span></div>
+      <div class="fbody"><div class="fbody-inner">
+        Today's reporting answers "what happened." A regular cadence of weekly or monthly scorecards
+        with agreed KPIs turns the tool from a rear-view mirror into a steering wheel:
+        <ul>
+          <li>Set outcome expectations (aged-AR %, resolve rates, $/follow-up) and let the list's priorities be tuned to match them.</li>
+          <li>Standing artifacts for finance leadership rather than ad hoc pulls.</li>
+        </ul>
+        <div class="why">Why it matters</div>
+        The tool already changes behavior daily at the rep level; cadence lets it do the same at the management level.
+      </div></div>
+    </div>
+
+    <div class="fitem rv d4">
+      <div class="fhead"><div class="fnum">5</div><h3>From Google Sheet to a real product</h3><span class="tag">UI / UX</span><span class="chev">▶</span></div>
+      <div class="fbody"><div class="fbody-inner">
+        The reps have effectively co-designed their ideal workflow inside the sheet: restricted
+        dropdowns, auto follow-up dates, per-rep views. But a spreadsheet has ceilings around
+        concurrency, speed at 100k rows, guardrails, and integration.
+        <ul>
+          <li>The workflow is proven and documented, which is exactly where you want to be before building software.</li>
+          <li>Options: an internal IT build on the new BigQuery foundation, or an external vendor. Worth scoping both.</li>
+        </ul>
+        <div class="why">Why it matters</div>
+        A year of daily use is the best requirements document we'll ever have.
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 8. CLOSING ============ -->
+<section id="close" data-nav="Discussion">
+  <span class="kicker rv">7 · Discussion</span>
+  <h2 class="rv">Over to Raymond</h2>
+  <p class="lead rv d1">One year of production behind us; the questions on the table:</p>
+  <div class="ask-grid">
+    <div class="card rv d1"><h3>Which future-state items matter most?</h3><p style="font-size:13.5px;color:var(--ink-2);">Especially the bad-debt reporting lens (#1) as the path to 3.5%.</p></div>
+    <div class="card rv d2"><h3>Internal vs. Equalize measurement</h3><p style="font-size:13.5px;color:var(--ink-2);">Should this tool become the standard yardstick under Scott &amp; Eric's breakout views?</p></div>
+    <div class="card rv d3"><h3>Sequencing with BigQuery</h3><p style="font-size:13.5px;color:var(--ink-2);">The CentralReach to BigQuery build gets us fresh data. How hard do we push, and what comes first once it lands?</p></div>
+  </div>
+  <footer class="rv d3">
+    Data: May 2026 working list, as of 5/11/2026. Claim-level examples are illustrative.
+    No real patient information appears in this document.
+  </footer>
+</section>
+
+</main>
+
+<script>
+/* ================= THEME ================= */
+const chips=document.querySelectorAll('[data-set-theme]');
+chips.forEach(c=>c.addEventListener('click',()=>{
+  document.documentElement.dataset.theme=c.dataset.setTheme;
+  chips.forEach(x=>x.classList.toggle('active',x===c));
+  try{localStorage.setItem('ar-theme',c.dataset.setTheme);}catch(e){}
+}));
+try{
+  const t=localStorage.getItem('ar-theme');
+  if(t){document.documentElement.dataset.theme=t;
+    chips.forEach(x=>x.classList.toggle('active',x.dataset.setTheme===t));}
+}catch(e){}
+
+/* ================= NAV DOTS + REVEAL ================= */
+const sections=[...document.querySelectorAll('section')];
+const dotsWrap=document.getElementById('dots');
+sections.forEach(s=>{
+  const a=document.createElement('a');
+  a.href='#'+s.id; a.dataset.label=s.dataset.nav;
+  dotsWrap.appendChild(a);
+});
+const dotEls=[...dotsWrap.children];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      const i=sections.indexOf(e.target);
+      dotEls.forEach((d,j)=>d.classList.toggle('active',i===j));
+    }
+  });
+},{rootMargin:'-45% 0px -45% 0px'});
+sections.forEach(s=>io.observe(s));
+
+const rio=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); rio.unobserve(e.target);} });
+},{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
+
+document.addEventListener('keydown',e=>{
+  if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
+  if(/SELECT|INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  e.preventDefault();
+  const mid=innerHeight/2;
+  let cur=0;
+  sections.forEach((s,i)=>{const r=s.getBoundingClientRect(); if(r.top<mid)cur=i;});
+  const next=e.key==='ArrowDown'?Math.min(cur+1,sections.length-1):Math.max(cur-1,0);
+  sections[next].scrollIntoView({behavior:'smooth'});
+});
+
+/* ================= FUTURE ACCORDION ================= */
+document.querySelectorAll('.fhead').forEach(h=>h.addEventListener('click',()=>{
+  const item=h.parentElement, body=item.querySelector('.fbody');
+  const open=item.classList.toggle('open');
+  body.style.maxHeight=open?body.scrollHeight+'px':'0';
+}));
+
+/* ================= TOOLTIP ================= */
+const tt=document.getElementById('tt');
+function bindTip(el,text){
+  el.addEventListener('mousemove',ev=>{
+    tt.textContent=text; tt.style.opacity=1;
+    tt.style.left=Math.min(ev.clientX+14,innerWidth-270)+'px';
+    tt.style.top=(ev.clientY+16)+'px';
+  });
+  el.addEventListener('mouseleave',()=>tt.style.opacity=0);
+}
+
+/* ================= PIPELINE ================= */
+const pipeDetail=document.getElementById('pipeDetail');
+const pnodes=[...document.querySelectorAll('.pnode')];
+pnodes.forEach(n=>n.addEventListener('click',()=>{
+  pnodes.forEach(x=>x.classList.remove('sel'));
+  n.classList.add('sel');
+  pipeDetail.innerHTML=n.dataset.info;
+}));
+const playBtn=document.getElementById('playPipe');
+const pipeHint=document.getElementById('pipeHint');
+let pipeTimer=null;
+playBtn.addEventListener('click',()=>{
+  if(pipeTimer)return;
+  const steps=[
+    {s:0,t:'Day 1 of the month: the billing, case, denial, and rejection pulls land.'},
+    {s:1,t:'Our build code joins the feeds and applies the mapping rulebook.'},
+    {s:2,t:'Out comes the working list: ~99k claims, each priority-ranked.'},
+    {s:3,t:'Reps work their queues daily; every night an automated copy is archived.'},
+    {s:4,t:'Month end: code diffs the daily copies into a changelog, and dashboards update.'}
+  ];
+  let i=0;
+  playBtn.disabled=true;
+  const tick=()=>{
+    pnodes.forEach(n=>n.classList.remove('hot'));
+    document.querySelectorAll('.plink').forEach(l=>l.classList.remove('flow'));
+    if(i>=steps.length){
+      pipeHint.textContent='…and the next month, it runs again.';
+      playBtn.disabled=false; pipeTimer=null; return;
+    }
+    pnodes.filter(n=>+n.dataset.step===steps[i].s).forEach(n=>n.classList.add('hot'));
+    const link=document.querySelector('.plink[data-flow="'+steps[i].s+'"]');
+    if(link)link.classList.add('flow');
+    pipeHint.textContent=steps[i].t;
+    i++; pipeTimer=setTimeout(tick,1900);
+  };
+  tick();
+});
+
+/* ================= CATEGORY CHART ================= */
+const catData=[
+  {l:'1 · Unpaid 91+ (Denial)',v:25.3,n:'12,050 claims. Oldest denials get worked first',deep:true},
+  {l:'2 · Unpaid 61-90 (Denial)',v:5.6,n:'2,487 claims'},
+  {l:'3 · Unpaid ≤60 (Denial)',v:14.2,n:'5,686 claims'},
+  {l:'4 · Unpaid 91+ (No response)',v:22.7,n:'9,476 claims where the payer went silent'},
+  {l:'5 · Unpaid 61-90 (No response)',v:5.0,n:'1,678 claims'},
+  {l:'6 · Unpaid ≤60 (No response)',v:84.1,n:'33,816 claims, young enough that most will pay on their own'},
+  {l:'7 · Underpayment',v:11.4,n:'22,663 claims paid below the agreed rate'}
+];
+const payerData=[
+  {l:'BCBS Texas',v:33.6},{l:'United Behavioral Health',v:25.5},
+  {l:'Cigna Behavioral Health',v:14.1},{l:'Aetna Behavioral Health',v:10.6},
+  {l:'Arizona Medicaid MCO',v:8.1},{l:'BCBS Minnesota',v:7.2},
+  {l:'BCBS Arizona',v:7.2},{l:'UMR',v:6.9}
+];
+const denialData=[
+  {l:'Coverage issues',v:8795},{l:'Authorization',v:6055},{l:'Duplicate',v:3982},
+  {l:'Contractual',v:3619},{l:'Documentation',v:2973},{l:'Credentialing',v:2498},
+  {l:'Billing',v:1936},{l:'Adjudication',v:1850},{l:'Timely filing',v:1738}
+];
+function drawBars(elId,data,fmt){
+  const wrap=document.getElementById(elId);
+  const max=Math.max(...data.map(d=>d.v));
+  data.forEach(d=>{
+    const row=document.createElement('div'); row.className='brow';
+    row.innerHTML='<div class="bl">'+d.l+'</div>'+
+      '<div class="btrack"><div class="axisline"></div><div class="bar'+(d.deep?' deep':'')+'" data-w="'+(d.v/max*100)+'"></div></div>'+
+      '<div class="bv">'+fmt(d.v)+'</div>';
+    wrap.insertBefore(row,wrap.querySelector('.chart-note'));
+    if(d.n)bindTip(row,d.n);
+  });
+  const bio=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){
+      e.target.querySelectorAll('.bar').forEach(b=>b.style.width=b.dataset.w+'%');
+      bio.unobserve(e.target);
+    }});
+  },{threshold:.3});
+  bio.observe(wrap);
+}
+drawBars('catChart',catData,v=>'$'+v.toFixed(1)+'M');
+drawBars('payerChart',payerData,v=>'$'+v.toFixed(1)+'M');
+drawBars('denialChart',denialData,v=>v.toLocaleString());
+
+/* ================= WORKLIST DEMO ================= */
+const SLA={'Medical Records Requested':4,'Negotiation':7,'Authorization Issue':10,
+  'Agreed Rate Request':15,'Coordination of Benefits':15,'Insurance Change Pending':20,
+  'Denial Worked - Reprocessing':25,'Medical Records Submitted':25,'Appeal Submitted':30,
+  'Initial Claim Processing':30,'Denial Upheld - Sent For Adjustment':60,
+  'Duplicate Primary Payment':30,'Two Primary Payors':30,'Posting Reallocation Request':30,
+  'Family Pay Request':30,'No Claim on File - Rebilled':25,'Paid and Posted':0};
+const demoRows=[
+  {id:'61-284-102',payer:'BCBS Texas',amt:'$4,890',cat:'1 · 91+ Denial',pc:'p1',issue:'Authorization',
+   opts:['Authorization Issue','Denial Worked - Reprocessing','Appeal Submitted','Medical Records Requested','Denial Upheld - Sent For Adjustment']},
+  {id:'62-771-334',payer:'United Behavioral',amt:'$2,340',cat:'4 · 91+ No response',pc:'p2',issue:'No payer response',
+   opts:['No Claim on File - Rebilled','Insurance Change Pending','Coordination of Benefits','Initial Claim Processing']},
+  {id:'63-105-978',payer:'Cigna Behavioral',amt:'$612',cat:'7 · Underpayment',pc:'',issue:'Paid under agreed rate',
+   opts:['Agreed Rate Request','Negotiation','Medical Records Submitted']},
+  {id:'60-933-415',payer:'Aetna Behavioral',amt:'−$1,205',cat:'8 · Credit',pc:'',issue:'Overpayment on account',
+   opts:['Duplicate Primary Payment','Two Primary Payors','Posting Reallocation Request','Family Pay Request']}
+];
+const tbody=document.querySelector('#demoTable tbody');
+demoRows.forEach(r=>{
+  const tr=document.createElement('tr');
+  const optHtml=['<option value="">choose…</option>',...r.opts.map(o=>'<option>'+o+'</option>')].join('');
+  tr.innerHTML='<td style="font-variant-numeric:tabular-nums;">'+r.id+'</td><td>'+r.payer+'</td>'+
+    '<td class="money">'+r.amt+'</td><td><span class="pill '+r.pc+'">'+r.cat+'</span></td>'+
+    '<td style="color:var(--ink-2)">'+r.issue+'</td>'+
+    '<td><select></select></td><td><span class="fu-chip"></span></td>';
+  tr.querySelector('select').innerHTML=optHtml;
+  tbody.appendChild(tr);
+  const sel=tr.querySelector('select'), chip=tr.querySelector('.fu-chip');
+  sel.addEventListener('change',()=>{
+    const days=SLA[sel.value];
+    chip.classList.remove('show');
+    if(sel.value===''){return;}
+    setTimeout(()=>{
+      if(sel.value==='Paid and Posted'||days===0){chip.innerHTML='<b>Done ✓</b>';}
+      else{
+        const d=new Date(); d.setDate(d.getDate()+days);
+        chip.innerHTML='<b>+'+days+'d</b> · '+d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+      }
+      chip.classList.add('show');
+    },120);
+  });
+});
+
+/* ================= ARCHIVE SIMULATOR ================= */
+const days=[4,5,6,7,8,11,12,13,14,15,18,19];
+const events={4:{status:'Authorization Issue',paid:0},6:{status:'Denial Worked - Reprocessing',paid:0},
+  13:{status:'Denial Worked - Reprocessing',paid:0,note:'follow-up call'},19:{status:'Paid and Posted',paid:3412}};
+const dayStrip=document.getElementById('dayStrip');
+days.forEach(d=>{
+  const el=document.createElement('div'); el.className='day'; el.dataset.d=d;
+  el.innerHTML='May<b>'+d+'</b><span class="cam">📸</span>';
+  dayStrip.appendChild(el);
+});
+const smStatus=document.getElementById('smStatus'), smPaid=document.getElementById('smPaid'),
+  simLog=document.getElementById('simLog'), snapStack=document.getElementById('snapStack'),
+  simRunBtn=document.getElementById('simRun'), simBuildBtn=document.getElementById('simBuild'),
+  simResetBtn=document.getElementById('simReset'), srvDot=document.getElementById('srvDot'),
+  srvSteps=[...document.querySelectorAll('#srvSteps li')], resultCard=document.getElementById('resultCard'),
+  clString=document.getElementById('clString');
+let simTimer=null, snapCount=0, running=false;
+
+function resetSim(){
+  clearTimeout(simTimer); simTimer=null; running=false; snapCount=0;
+  document.querySelectorAll('.day').forEach(d=>d.classList.remove('today','snapped'));
+  smStatus.textContent='—'; smPaid.textContent='$0';
+  simLog.textContent="The rep's tab, live. Press play.";
+  snapStack.innerHTML=''; document.getElementById('snapLbl').textContent='';
+  simRunBtn.disabled=false; simBuildBtn.disabled=true;
+  srvDot.classList.remove('on'); srvSteps.forEach(s=>s.className='');
+  resultCard.classList.remove('show'); clString.textContent='';
+  document.getElementById('kTouches').textContent='0';
+  document.getElementById('kChanges').textContent='0';
+  document.getElementById('kPaid').textContent='$0';
+}
+simResetBtn.addEventListener('click',resetSim);
+
+simRunBtn.addEventListener('click',()=>{
+  if(running)return; resetSim(); running=true; simRunBtn.disabled=true;
+  let i=0;
+  const step=()=>{
+    if(i>0)document.querySelector('.day[data-d="'+days[i-1]+'"]').classList.remove('today');
+    if(i>=days.length){
+      simLog.textContent='Month over. '+snapCount+' nightly copies archived. Now run the build.';
+      simBuildBtn.disabled=false; running=false; return;
+    }
+    const d=days[i], el=document.querySelector('.day[data-d="'+d+'"]');
+    el.classList.add('today');
+    const ev=events[d];
+    if(ev){
+      smStatus.textContent=ev.status; smStatus.classList.remove('chg'); void smStatus.offsetWidth; smStatus.classList.add('chg');
+      if(ev.paid){smPaid.textContent='$'+ev.paid.toLocaleString(); smPaid.classList.remove('chg'); void smPaid.offsetWidth; smPaid.classList.add('chg');}
+      simLog.textContent='May '+d+': rep works the claim and sets it to "'+ev.status+'"'+(ev.paid?'. Payment posts!':'');
+    }else{
+      simLog.textContent='May '+d+': no change to this claim today.';
+    }
+    simTimer=setTimeout(()=>{
+      el.classList.add('snapped');
+      const card=document.createElement('div'); card.className='snapcard';
+      card.style.zIndex=snapCount+1;
+      card.innerHTML='<b>Snapshot · May '+d+'</b><br>status: '+(smStatus.textContent)+' · paid: '+smPaid.textContent;
+      snapStack.appendChild(card);
+      snapCount++;
+      layoutStack();
+      document.getElementById('snapLbl').textContent='· '+snapCount+(snapCount===1?' copy':' copies');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>card.classList.add('landed')));
+      i++; simTimer=setTimeout(step,650);
+    },850);
+  };
+  step();
+});
+
+simBuildBtn.addEventListener('click',()=>{
+  simBuildBtn.disabled=true; srvDot.classList.add('on');
+  let s=0;
+  const doStep=()=>{
+    if(s>0)srvSteps[s-1].className='done';
+    if(s>=srvSteps.length){
+      srvDot.classList.remove('on');
+      resultCard.classList.add('show');
+      const full='05/04 - Authorization Issue;  05/06 - Denial Worked - Reprocessing;  05/19 - Paid and Posted;';
+      let c=0; clString.textContent='';
+      const typeIt=()=>{ if(c<=full.length){clString.textContent=full.slice(0,c); c+=3; setTimeout(typeIt,18);} };
+      typeIt();
+      animateNum('kTouches',4); animateNum('kChanges',3);
+      let p=0; const pEl=document.getElementById('kPaid');
+      const pTick=()=>{p+=171; if(p>=3412){pEl.textContent='+$3,412';}else{pEl.textContent='+$'+p.toLocaleString(); setTimeout(pTick,30);}};
+      pTick();
+      return;
+    }
+    srvSteps[s].className='doing'; s++; setTimeout(doStep,1000);
+  };
+  doStep();
+});
+function layoutStack(){
+  const cards=[...snapStack.children], n=cards.length;
+  cards.forEach((c,j)=>{
+    const depth=n-1-j;
+    c.style.top=(42-Math.min(depth,5)*8)+'px';
+    if(depth>5){c.style.opacity='0';}
+    else if(c.classList.contains('landed')){c.style.opacity='1';}
+    c.classList.toggle('buried',depth>0);
+  });
+}
+function animateNum(id,target){
+  const el=document.getElementById(id); let v=0;
+  const t=()=>{v++; el.textContent=v; if(v<target)setTimeout(t,180);};
+  setTimeout(t,300);
+}
+</script>
+</body>
+</html>
