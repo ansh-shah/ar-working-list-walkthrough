@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The AR Working List · Process Walkthrough</title>
 <meta name="description" content="An interactive walkthrough of the AR Working List process, prioritization, and productivity workflow.">
 <meta property="og:title" content="The AR Working List · Process Walkthrough">
 <meta property="og:description" content="An interactive walkthrough of the AR Working List process, prioritization, and productivity workflow.">
@@ -11,6 +10,7 @@
 <meta property="og:url" content="https://ansh-shah.github.io/ar-working-list-walkthrough/">
 <meta property="og:image" content="https://ansh-shah.github.io/ar-working-list-walkthrough/og.png">
 <meta name="twitter:card" content="summary_large_image">
+<title>The AR Working List · Process Walkthrough</title>
 <style>
   /* ============ THEMES ============ */
   :root{
@@ -345,6 +345,25 @@
   .ask-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:20px;}
   footer{padding:30px 0 46px; font-size:12px; color:var(--muted);}
 
+  /* ============ SUGGEST-EDITS MODE ============ */
+  body.editing [contenteditable="true"]{
+    outline:1.5px dashed color-mix(in srgb, var(--accent) 50%, transparent);
+    outline-offset:3px; border-radius:4px; cursor:text;
+  }
+  body.editing [contenteditable="true"]:hover{outline-color:var(--accent);}
+  body.editing [contenteditable="true"]:focus{outline:2px solid var(--accent);}
+  body.editing [contenteditable="true"].edited{outline:2px solid var(--good);}
+  .editbar{
+    position:fixed; bottom:18px; left:50%; transform:translate(-50%,110px); z-index:60;
+    display:flex; gap:10px; align-items:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:999px;
+    box-shadow:var(--shadow); padding:9px 12px 9px 18px; font-size:13px; color:var(--ink-2);
+    transition:transform .35s;
+  }
+  body.editing .editbar{transform:translate(-50%,0);}
+  .editbar .cnt{color:var(--accent); font-weight:700;}
+  @media(max-width:700px){.editbar{width:calc(100% - 24px); flex-wrap:wrap; border-radius:16px;}}
+
   /* tooltip */
   #tt{
     position:fixed; z-index:99; pointer-events:none; background:var(--ink); color:var(--bg);
@@ -363,6 +382,7 @@
     <button class="theme-chip" data-set-theme="warm">Warm</button>
     <button class="theme-chip" data-set-theme="bold">Bold</button>
     <button class="theme-chip" data-set-theme="dark">Dark</button>
+    <button class="theme-chip" id="editToggle" style="margin-left:10px;">✎ Suggest edits</button>
   </div>
 </div>
 
@@ -698,6 +718,12 @@
 
 </main>
 
+<div class="editbar" id="editbar">
+  <span><span class="cnt" id="editCnt">0</span> text edits · click any outlined text and type over it</span>
+  <button id="copyEdits" class="primary">Copy edits for Ansh</button>
+  <button id="exitEdit">Done</button>
+</div>
+
 <script>
 /* ================= THEME ================= */
 const chips=document.querySelectorAll('[data-set-theme]');
@@ -739,6 +765,7 @@ document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
 document.addEventListener('keydown',e=>{
   if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
   if(/SELECT|INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  if(document.activeElement.isContentEditable)return;
   e.preventDefault();
   const mid=innerHeight/2;
   let cur=0;
@@ -749,6 +776,7 @@ document.addEventListener('keydown',e=>{
 
 /* ================= FUTURE ACCORDION ================= */
 document.querySelectorAll('.fhead').forEach(h=>h.addEventListener('click',()=>{
+  if(document.body.classList.contains('editing'))return;
   const item=h.parentElement, body=item.querySelector('.fbody');
   const open=item.classList.toggle('open');
   body.style.maxHeight=open?body.scrollHeight+'px':'0';
@@ -994,6 +1022,65 @@ function animateNum(id,target){
   const el=document.getElementById(id); let v=0;
   const t=()=>{v++; el.textContent=v; if(v<target)setTimeout(t,180);};
   setTimeout(t,300);
+}
+
+/* ================= SUGGEST EDITS ================= */
+const EDIT_EXCLUDE='#demoTable,#dayStrip,#snapStack,#resultCard,.sheet-mini,#srvSteps,#simLog,.brow,.pipe,.topbar,.editbar';
+const editables=[...document.querySelectorAll('main h1,main h2,main h3,main p,main li,main .kicker,main .silo b,main .silo small,main .one-list,main .stat .l,main .stat .v,main .hz,main footer')]
+  .filter(el=>!el.closest(EDIT_EXCLUDE));
+const editOrig=new Map();
+const editCntEl=document.getElementById('editCnt');
+const normTxt=s=>s.replace(/\s+/g,' ').trim();
+function changedEdits(){
+  return editables.filter(el=>editOrig.has(el)&&normTxt(el.innerText)!==editOrig.get(el));
+}
+function refreshEditCount(){
+  editables.forEach(el=>el.classList.toggle('edited',editOrig.has(el)&&normTxt(el.innerText)!==editOrig.get(el)));
+  editCntEl.textContent=changedEdits().length;
+}
+function setEditMode(on){
+  document.body.classList.toggle('editing',on);
+  editables.forEach(el=>{
+    if(on&&!editOrig.has(el))editOrig.set(el,normTxt(el.innerText));
+    el.contentEditable=on?'true':'false';
+  });
+  if(on){
+    document.querySelectorAll('.fitem').forEach(it=>{
+      it.classList.add('open'); it.querySelector('.fbody').style.maxHeight='none';
+    });
+    document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
+  }
+  document.getElementById('editToggle').textContent=on?'✎ Editing on':'✎ Suggest edits';
+}
+document.getElementById('editToggle').addEventListener('click',()=>setEditMode(!document.body.classList.contains('editing')));
+document.getElementById('exitEdit').addEventListener('click',()=>setEditMode(false));
+document.addEventListener('input',e=>{
+  if(e.target&&e.target.closest&&e.target.closest('[contenteditable="true"]'))refreshEditCount();
+});
+document.getElementById('copyEdits').addEventListener('click',()=>{
+  const btn=document.getElementById('copyEdits');
+  const ch=changedEdits();
+  if(!ch.length){
+    btn.textContent='No edits yet'; setTimeout(()=>btn.textContent='Copy edits for Ansh',1600); return;
+  }
+  const lines=['AR deck: suggested text edits ('+ch.length+')',''];
+  ch.forEach((el,idx)=>{
+    const sec=el.closest('section');
+    lines.push((idx+1)+'. Section: '+(sec&&sec.dataset.nav?sec.dataset.nav:'General'));
+    lines.push('WAS: '+editOrig.get(el));
+    lines.push('NOW: '+normTxt(el.innerText));
+    lines.push('');
+  });
+  const txt=lines.join('\n');
+  const done=()=>{btn.textContent='Copied. Paste into Google Chat'; setTimeout(()=>btn.textContent='Copy edits for Ansh',2400);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>{fallbackCopy(txt);done();});
+  }else{fallbackCopy(txt);done();}
+});
+function fallbackCopy(t){
+  const ta=document.createElement('textarea'); ta.value=t;
+  ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
 }
 </script>
 </body>
