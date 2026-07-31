@@ -424,13 +424,13 @@
     <div class="stat rv d3"><div class="v">Nightly</div><div class="l">automatic snapshot of every queue</div></div>
     <div class="stat rv d4"><div class="v">1 year</div><div class="l">in production, worked every day</div></div>
   </div>
-  <p class="note rv d4">Use ↓ / ↑ arrow keys or the dots on the right to move through sections. Any figures shown are illustrative, drawn from a sample month; the story here is the process.</p>
+  <p class="note rv d4">Use ↓ / ↑ arrow keys or the dots on the right to move through sections. Any figures shown are illustrative, drawn from a sample month; what matters here is the process.</p>
 </section>
 
 <!-- ============ 2. THE PROBLEM ============ -->
 <section id="problem" data-nav="The problem">
   <span class="kicker rv">1 · Why it exists</span>
-  <h2 class="rv">Our AR data lived in three places. Our priorities lived in nobody's.</h2>
+  <h2 class="rv">Our AR data sat in three systems, and there was no agreed order for working it.</h2>
   <p class="lead rv d1">Before the working list, an AR rep deciding "what do I work today?" had to reconcile all of this by hand:</p>
 
   <div class="silo-wrap rv d2">
@@ -497,7 +497,7 @@
   </div>
 
   <div class="pipe-detail rv d3" id="pipeDetail">
-    <b>Tip:</b> today this whole journey repeats monthly. One of the future-state questions is how much faster we can spin the loop.
+    <b>Tip:</b> today this whole cycle repeats monthly. One of the future-state questions is how much faster we can run it.
   </div>
 </section>
 
@@ -505,7 +505,7 @@
 <section id="priority" data-nav="Prioritization">
   <span class="kicker rv">3 · The prioritized queue</span>
   <h2 class="rv">Every claim gets a priority number. Reps work top-down.</h2>
-  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, &gt;90 days first</b>, then underpayments and cleanup queues. Reps don't decide what matters most; the list already did.</p>
+  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, &gt;90 days first</b>, then underpayments and cleanup queues. By the time a rep opens their tab, the ordering decision is already made.</p>
 
   <div class="card rv d2">
     <h3 style="margin-bottom:12px;">The priority ladder</h3>
@@ -519,7 +519,7 @@
       <div class="lrow"><span class="ln">7</span><div><b>Underpayment.</b> <span class="ld">Paid, but under the agreed rate.</span></div></div>
       <div class="lrow"><span class="ln">8+</span><div><b>Cleanup queues.</b> <span class="ld">Credits, negative payments, and not-yet-billed, each with their own playbook.</span></div></div>
     </div>
-    <div class="chart-note">Denials outrank silence, and older outranks newer. A rep opens their tab and simply works from the top.</div>
+    <div class="chart-note">Denials outrank silence, and older outranks newer. A rep opens their tab and works from the top.</div>
   </div>
 
   <h3 class="rv" style="margin-top:36px;">Try it: the sheet enforces the playbook</h3>
@@ -543,7 +543,7 @@
 <!-- ============ 5. ARCHIVE + CHANGELOG ============ -->
 <section id="loop" data-nav="Daily archive → changelog">
   <span class="kicker rv">4 · The part you can't see in the sheet</span>
-  <h2 class="rv">Every night we photograph the list. At month end, code turns the photos into a story.</h2>
+  <h2 class="rv">Every night we photograph the list. At month end, code compares the photos and writes down what changed.</h2>
   <p class="lead rv d1">
     This is how productivity gets measured without anyone self-reporting. Run the simulation:
     watch a rep work one claim across a month, the nightly archive collect its snapshots,
@@ -601,16 +601,16 @@
 
   <p class="note rv d3">
     Multiply this by every claim in the book and 16 queues and the archive becomes the productivity record:
-    what got worked, when, by whom, and what moved as a result. Nobody fills out a timesheet.
-    The data is simply observed.
+    what got worked, when, by whom, and what moved as a result. No one fills out a timesheet;
+    the record comes straight from the nightly copies.
   </p>
 </section>
 
 <!-- ============ 6. WHAT IT TELLS US ============ -->
 <section id="measure" data-nav="What it tells us">
   <span class="kicker rv">5 · What comes out the other side</span>
-  <h2 class="rv">Work measured in dollars, not anecdotes</h2>
-  <p class="lead rv d1">Because every touch and every dollar delta is captured, the reporting layer can answer questions we simply couldn't before:</p>
+  <h2 class="rv">Measuring the work in dollars</h2>
+  <p class="lead rv d1">Every touch and every change in dollars is captured, so the reporting can be cut four ways:</p>
 
   <div class="metric-grid">
     <div class="card rv d1"><b class="big">Per rep</b><p class="sub" style="margin-top:6px;">Claims assigned · touches this month · follow-ups completed · <b>$ collected per follow-up</b></p></div>
@@ -636,7 +636,7 @@
 <!-- ============ 7. FUTURE STATE ============ -->
 <section id="future" data-nav="Future state">
   <span class="kicker rv">6 · Where this goes next</span>
-  <h2 class="rv">A year in, the machine works. Now it can start steering.</h2>
+  <h2 class="rv">After a year of running it, we know what to build next.</h2>
   <p class="lead rv d1">
     Five opportunities we'd like Raymond's read on, ordered roughly by how directly they serve
     the 3.5% bad-debt goal. Click each to expand.
@@ -654,8 +654,8 @@
       <div class="fhead"><div class="fnum">1</div><h3>The bad-debt lens: reporting our way to 3.5%</h3><span class="tag">Goal-direct</span><span class="chev"><svg class="ic" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></div>
       <div class="fbody"><div class="fbody-inner">
         Bad debt is AR we never managed to collect. This tool sees every dollar of AR before it
-        gets there, already tagged with the reason it's stuck, which makes it a natural engine
-        for new reporting:
+        gets there, already tagged with the reason it's stuck, which makes it the right place
+        to build that reporting:
         <ul>
           <li><b>Bad-debt bridge:</b> trace eventual write-offs back to their denial categories, so "we missed 3.5%" becomes "authorization denials in two payers drove X%."</li>
           <li><b>Early-warning views:</b> claims aging toward write-off risk, flagged while they're still workable; claims aging toward 90+ days, flagged before they age into the bucket.</li>
@@ -671,15 +671,15 @@
       <div class="fbody"><div class="fbody-inner">
         Equalize RCM (sometimes written "ERCM") works a share of our claims, but they don't work
         inside the Google Sheet, so we can't see their activity at the same level of detail as our
-        own reps &mdash; only the claims they tell us they've worked. What we can do is measure
+        own reps; we only see the claims they tell us they've worked. What we can do is measure
         their back-end effectiveness: track the claims we assign them and follow the payment data
         on those claims, side by side with the claims our team works.
         <ul>
           <li>Scott and Eric have been building views to describe the internal/outsourced breakout. This tool can supply the observed numbers underneath those views.</li>
-          <li>Current effectiveness calculations aren't fully fleshed out, but we're continuing to iterate here to determine how effective ERCM is and what the right staffing mix is between onshore and offshore &mdash; with assignment plus payment data as the defensible, automatic basis.</li>
+          <li>Current effectiveness calculations aren't fully fleshed out, but we're continuing to iterate here to determine how effective ERCM is and what the right staffing mix is between onshore and offshore, with assignment plus payment data as the defensible, automatic basis.</li>
         </ul>
         <div class="why">Why it matters</div>
-        Whether we grow the internal team, expand outsourcing, or rebalance, that decision deserves a measured answer, not an impression.
+        Whether we grow the internal team, expand outsourcing, or rebalance, we want that decision backed by payment data instead of impressions.
       </div></div>
     </div>
 
@@ -696,15 +696,15 @@
           <li>Fresher data compounds everything else on this list: priorities, follow-ups, and reporting all improve with it. It also adds new claims in real time and removes paid and posted claims, which reduces needless statusing.</li>
         </ul>
         <div class="why">Why it matters</div>
-        The biggest force multiplier on this list, and the enabling work is already in motion.
+        This is the item that improves all the others, and the enabling work is already underway.
       </div></div>
     </div>
 
     <div class="fitem rv d3">
       <div class="fhead"><div class="fnum">4</div><h3>Reporting cadence tied to KPIs and goals</h3><span class="tag">Steering</span><span class="chev"><svg class="ic" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></div>
       <div class="fbody"><div class="fbody-inner">
-        Today's reporting answers "what happened." A regular cadence of weekly or monthly scorecards
-        with agreed KPIs turns the tool from a rear-view mirror into a steering wheel:
+        Today's reporting describes what already happened. A regular cadence of weekly or monthly
+        scorecards with agreed KPIs would let the tool set direction instead of just describing last month:
         <ul>
           <li>Set outcome expectations (aged-AR %, resolve rates, $/follow-up, claim backlog) and let the list's priorities be tuned to match them.</li>
           <li>Standing artifacts for finance leadership rather than ad hoc pulls.</li>
@@ -718,7 +718,7 @@
       <div class="fhead"><div class="fnum">5</div><h3>From Google Sheet to a real product</h3><span class="tag">UI / UX</span><span class="chev"><svg class="ic" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span></div>
       <div class="fbody"><div class="fbody-inner">
         The reps have effectively co-designed their ideal workflow inside the sheet: restricted
-        dropdowns, auto follow-up dates, per-rep views. But a spreadsheet has ceilings around
+        dropdowns, auto follow-up dates, per-rep views. But a spreadsheet runs into limits:
         concurrency, speed at 100k rows, guardrails, and integration.
         <ul>
           <li>The workflow is proven and documented, which is exactly where you want to be before building software.</li>
