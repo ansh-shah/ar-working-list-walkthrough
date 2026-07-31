@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="boardroom">
+<html lang="en" data-theme="warm">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,30 +19,11 @@
     --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --critical:#d03b3b;
     --good-text:#006300;
   }
-  html[data-theme="boardroom"]{
-    --bg:#f4f6f9; --surface:#ffffff; --surface-2:#eef2f7;
-    --ink:#101418; --ink-2:#4c5560; --muted:#6f7683;
-    --line:#e2e6ec; --accent:#1c5cab; --accent-soft:#e3edf9; --accent-ink:#ffffff;
-    --radius:10px; --shadow:0 1px 3px rgba(16,20,24,.07),0 8px 24px rgba(16,20,24,.06);
-  }
   html[data-theme="warm"]{
     --bg:#faf7f1; --surface:#fffdf8; --surface-2:#f3eee4;
     --ink:#1c1917; --ink-2:#57534e; --muted:#7b756c;
     --line:#e7e1d5; --accent:#0f766e; --accent-soft:#dcefec; --accent-ink:#ffffff;
     --radius:14px; --shadow:0 1px 3px rgba(28,25,23,.07),0 10px 28px rgba(28,25,23,.07);
-  }
-  html[data-theme="bold"]{
-    --bg:#f5f4fd; --surface:#ffffff; --surface-2:#edebfa;
-    --ink:#17143a; --ink-2:#4f4b77; --muted:#726d99;
-    --line:#e3e0f2; --accent:#5b4bd6; --accent-soft:#e7e3fb; --accent-ink:#ffffff;
-    --radius:16px; --shadow:0 2px 4px rgba(23,20,58,.08),0 12px 32px rgba(23,20,58,.09);
-  }
-  html[data-theme="dark"]{
-    --bg:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
-    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
-    --line:#2c2c2a; --accent:#3987e5; --accent-soft:#16283e; --accent-ink:#ffffff;
-    --radius:12px; --shadow:0 1px 3px rgba(0,0,0,.5),0 10px 30px rgba(0,0,0,.45);
-    --good-text:#0ca30c;
   }
 
   /* ============ BASE ============ */
@@ -90,15 +71,8 @@
   }
   .topbar .brand{font-weight:700; font-size:14px; white-space:nowrap;}
   .topbar .brand span{color:var(--accent);}
-  .themes{margin-left:auto; display:flex; gap:6px; align-items:center; flex-wrap:wrap;}
-  .themes .lbl{font-size:12px; color:var(--muted); margin-right:2px;}
-  .theme-chip{
-    font-size:12.5px; padding:5px 12px; border-radius:999px; font-weight:600;
-  }
-  .theme-chip.active{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
   @media(max-width:700px){
     .topbar{position:static; flex-wrap:wrap; gap:8px; padding:12px 16px;}
-    .themes{margin-left:0;}
   }
 
   /* ============ SIDE NAV DOTS ============ */
@@ -229,7 +203,6 @@
   }
   .pill.p1{background:color-mix(in srgb,var(--critical) 14%, var(--surface)); color:var(--critical);}
   .pill.p2{background:color-mix(in srgb,var(--serious) 16%, var(--surface)); color:#b4552f;}
-  html[data-theme="dark"] .pill.p2{color:var(--serious);}
   .demo-table select{
     font-family:var(--font); font-size:12.5px; padding:5px 8px; border-radius:8px;
     border:1px solid var(--line); background:var(--surface); color:var(--ink); max-width:220px;
@@ -360,30 +333,11 @@
   .ask-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:20px;}
   footer{padding:30px 0 46px; font-size:12px; color:var(--muted);}
 
-  /* ============ SUGGEST-EDITS MODE ============ */
-  body.editing [contenteditable="true"]{
-    outline:1.5px dashed color-mix(in srgb, var(--accent) 50%, transparent);
-    outline-offset:3px; border-radius:4px; cursor:text;
-  }
-  body.editing [contenteditable="true"]:hover{outline-color:var(--accent);}
-  body.editing [contenteditable="true"]:focus{outline:2px solid var(--accent);}
-  body.editing [contenteditable="true"].edited{outline:2px solid var(--good);}
-  .editbar{
-    position:fixed; bottom:18px; left:50%; transform:translate(-50%,110px); z-index:60;
-    display:flex; gap:10px; align-items:center;
-    background:var(--surface); border:1px solid var(--line); border-radius:999px;
-    box-shadow:var(--shadow); padding:9px 12px 9px 18px; font-size:13px; color:var(--ink-2);
-    transition:transform .35s;
-  }
-  body.editing .editbar{transform:translate(-50%,0);}
-  .editbar .cnt{color:var(--accent); font-weight:700;}
-  @media(max-width:700px){.editbar{width:calc(100% - 24px); flex-wrap:wrap; border-radius:16px;}}
-
   /* ============ REDUCED MOTION ============ */
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto;}
     .rv{transition:none; transform:none; opacity:1;}
-    .snapcard,.editbar,.fu-chip,.fbody,.chev{transition:none;}
+    .snapcard,.fu-chip,.fbody,.chev{transition:none;}
     .plink.flow{animation:none;}
     .srv-dot.on{animation:none;}
     .sheet-mini .chg{animation:none;}
@@ -395,14 +349,6 @@
 
 <div class="topbar">
   <div class="brand">AR Working List <span>·</span> Process Walkthrough</div>
-  <div class="themes">
-    <span class="lbl">Style:</span>
-    <button class="theme-chip active" data-set-theme="boardroom">Boardroom</button>
-    <button class="theme-chip" data-set-theme="warm">Warm</button>
-    <button class="theme-chip" data-set-theme="bold">Bold</button>
-    <button class="theme-chip" data-set-theme="dark">Dark</button>
-    <button class="theme-chip" id="editToggle" style="margin-left:10px;"><svg class="ic" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Suggest edits</button>
-  </div>
 </div>
 
 <nav class="dots" id="dots"></nav>
@@ -750,26 +696,7 @@
 
 </main>
 
-<div class="editbar" id="editbar">
-  <span><span class="cnt" id="editCnt">0</span> text edits · click any outlined text and type over it</span>
-  <button id="copyEdits" class="primary">Copy edits for Ansh</button>
-  <button id="exitEdit">Done</button>
-</div>
-
 <script>
-/* ================= THEME ================= */
-const chips=document.querySelectorAll('[data-set-theme]');
-chips.forEach(c=>c.addEventListener('click',()=>{
-  document.documentElement.dataset.theme=c.dataset.setTheme;
-  chips.forEach(x=>x.classList.toggle('active',x===c));
-  try{localStorage.setItem('ar-theme',c.dataset.setTheme);}catch(e){}
-}));
-try{
-  const t=localStorage.getItem('ar-theme');
-  if(t){document.documentElement.dataset.theme=t;
-    chips.forEach(x=>x.classList.toggle('active',x.dataset.setTheme===t));}
-}catch(e){}
-
 /* ================= NAV DOTS + REVEAL ================= */
 const sections=[...document.querySelectorAll('section')];
 const dotsWrap=document.getElementById('dots');
@@ -797,7 +724,6 @@ document.querySelectorAll('.rv').forEach(el=>rio.observe(el));
 document.addEventListener('keydown',e=>{
   if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
   if(/SELECT|INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
-  if(document.activeElement.isContentEditable)return;
   e.preventDefault();
   const mid=innerHeight/2;
   let cur=0;
@@ -808,7 +734,6 @@ document.addEventListener('keydown',e=>{
 
 /* ================= FUTURE ACCORDION ================= */
 document.querySelectorAll('.fhead').forEach(h=>h.addEventListener('click',()=>{
-  if(document.body.classList.contains('editing'))return;
   h.parentElement.classList.toggle('open');
 }));
 
@@ -1000,63 +925,6 @@ function animateNum(id,target){
   setTimeout(t,300);
 }
 
-/* ================= SUGGEST EDITS ================= */
-const EDIT_EXCLUDE='#demoTable,#dayStrip,#snapStack,#resultCard,.sheet-mini,#srvSteps,#simLog,.pipe,.topbar,.editbar';
-const editables=[...document.querySelectorAll('main h1,main h2,main h3,main p,main li,main .kicker,main .silo b,main .silo small,main .one-list,main .stat .l,main .stat .v,main .hz,main .lrow b,main .lrow .ld,main .qgrid .q,main .chart-note,main footer')]
-  .filter(el=>!el.closest(EDIT_EXCLUDE));
-const editOrig=new Map();
-const editCntEl=document.getElementById('editCnt');
-const normTxt=s=>s.replace(/\s+/g,' ').trim();
-function changedEdits(){
-  return editables.filter(el=>editOrig.has(el)&&normTxt(el.innerText)!==editOrig.get(el));
-}
-function refreshEditCount(){
-  editables.forEach(el=>el.classList.toggle('edited',editOrig.has(el)&&normTxt(el.innerText)!==editOrig.get(el)));
-  editCntEl.textContent=changedEdits().length;
-}
-function setEditMode(on){
-  document.body.classList.toggle('editing',on);
-  editables.forEach(el=>{
-    if(on&&!editOrig.has(el))editOrig.set(el,normTxt(el.innerText));
-    el.contentEditable=on?'true':'false';
-  });
-  if(on){
-    document.querySelectorAll('.fitem').forEach(it=>it.classList.add('open'));
-    document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
-  }
-  const PEN_SVG='<svg class="ic" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>';
-  document.getElementById('editToggle').innerHTML=PEN_SVG+(on?' Editing on':' Suggest edits');
-}
-document.getElementById('editToggle').addEventListener('click',()=>setEditMode(!document.body.classList.contains('editing')));
-document.getElementById('exitEdit').addEventListener('click',()=>setEditMode(false));
-document.addEventListener('input',e=>{
-  if(e.target&&e.target.closest&&e.target.closest('[contenteditable="true"]'))refreshEditCount();
-});
-document.getElementById('copyEdits').addEventListener('click',()=>{
-  const btn=document.getElementById('copyEdits');
-  const ch=changedEdits();
-  if(!ch.length){
-    btn.textContent='No edits yet'; setTimeout(()=>btn.textContent='Copy edits for Ansh',1600); return;
-  }
-  const lines=['AR deck: suggested text edits ('+ch.length+')',''];
-  ch.forEach((el,idx)=>{
-    const sec=el.closest('section');
-    lines.push((idx+1)+'. Section: '+(sec&&sec.dataset.nav?sec.dataset.nav:'General'));
-    lines.push('WAS: '+editOrig.get(el));
-    lines.push('NOW: '+normTxt(el.innerText));
-    lines.push('');
-  });
-  const txt=lines.join('\n');
-  const done=()=>{btn.textContent='Copied. Paste into Google Chat'; setTimeout(()=>btn.textContent='Copy edits for Ansh',2400);};
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(done).catch(()=>{fallbackCopy(txt);done();});
-  }else{fallbackCopy(txt);done();}
-});
-function fallbackCopy(t){
-  const ta=document.createElement('textarea'); ta.value=t;
-  ta.style.position='fixed'; ta.style.opacity='0';
-  document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-}
 </script>
 </body>
 </html>
