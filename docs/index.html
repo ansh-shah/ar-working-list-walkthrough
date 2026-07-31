@@ -902,7 +902,7 @@ document.querySelectorAll('.fhead').forEach(h=>h.addEventListener('click',()=>{
 /* ================= PIPELINE STEPPER ================= */
 const plCaps=[
   "Five feeds land at the start of the month: billing and demographics from CentralReach, cases from Salesforce, payer denials, and Office Ally rejections.",
-  "Code on a server joins the five feeds into one row per claim, and the mapping rulebook categorizes every row: denial codes to categories, payers to buckets, rebills keep their identity.",
+  "The build runs in Row Zero: it joins the five feeds into one row per claim, and the mapping rulebook categorizes every row: denial codes to categories, payers to buckets, rebills keep their identity.",
   "The working list itself: everything five systems knew about a claim, gathered into one row a rep can act on. The same list also feeds AR and denial reporting.",
   "The list deals out into 16 queues; each rep works their tab top-down. Every night the archive takes a complete copy of every queue.",
   "At month end, code compares the nightly copies and writes one line per claim. Productivity dashboards update from there. The simulation below shows it happening to one claim."
