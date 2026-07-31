@@ -603,52 +603,9 @@
 
   <div class="pl-cap rv d3" id="plCap"></div>
   <p class="note rv d3"><b>Tip:</b> today this whole cycle repeats monthly. One of the future-state questions is how much faster we can run it.</p>
-</section>
 
-<!-- ============ 4. PRIORITIZATION ============ -->
-<section id="priority" data-nav="Prioritization">
-  <span class="kicker rv">3 · The prioritized queue</span>
-  <h2 class="rv">Every claim gets a priority number. Reps work top-down.</h2>
-  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, &gt;90 days first</b>, then underpayments and cleanup queues. By the time a rep opens their tab, the ordering decision is already made.</p>
-
-  <div class="card rv d2">
-    <h3 style="margin-bottom:12px;">The priority ladder</h3>
-    <div class="ladder">
-      <div class="lrow top"><span class="ln">1</span><div><b>Unpaid 91+, denied.</b> <span class="ld">The oldest denied claims. Worked first, every day.</span></div></div>
-      <div class="lrow"><span class="ln">2</span><div><b>Unpaid 61-90, denied.</b> <span class="ld">Denials next in line as they age.</span></div></div>
-      <div class="lrow"><span class="ln">3</span><div><b>Unpaid 60 or less, denied.</b> <span class="ld">Fresh denials, caught before they age.</span></div></div>
-      <div class="lrow"><span class="ln">4</span><div><b>Unpaid 91+, no response.</b> <span class="ld">The payer went silent months ago.</span></div></div>
-      <div class="lrow"><span class="ln">5</span><div><b>Unpaid 61-90, no response.</b> <span class="ld">Silence that's starting to age.</span></div></div>
-      <div class="lrow"><span class="ln">6</span><div><b>Unpaid 60 or less, no response.</b> <span class="ld">The bulk of the book. Most of these pay on their own without a touch.</span></div></div>
-      <div class="lrow"><span class="ln">7</span><div><b>Underpayment.</b> <span class="ld">Paid, but under the agreed rate.</span></div></div>
-      <div class="lrow"><span class="ln">8+</span><div><b>Cleanup queues.</b> <span class="ld">Credits, negative payments, and not-yet-billed, each with their own playbook.</span></div></div>
-    </div>
-    <div class="chart-note">Denials outrank silence, and older outranks newer. A rep opens their tab and works from the top.</div>
-  </div>
-
-  <h3 class="rv" style="margin-top:36px;">Try it: the sheet enforces the playbook</h3>
+  <h3 class="rv" style="margin-top:44px;">Zoom in: every night we photograph the list, and at month end code writes down what changed</h3>
   <p class="rv d1" style="font-size:14.5px;color:var(--ink-2);max-width:66ch;">
-    Reps type almost nothing. Pick a status below and watch two rules fire: the dropdown only offers
-    statuses valid for that claim's category, and the follow-up date sets itself from the
-    status's built-in timeline (records requested means check back in 4 days, an appeal means 30).
-  </p>
-
-  <div class="card rv d2" style="overflow-x:auto;">
-    <table class="demo-table" id="demoTable">
-      <thead><tr>
-        <th>Claim</th><th>Payer</th><th style="text-align:right">Outstanding</th><th>Priority</th><th>Issue</th><th>Status (you pick)</th><th>Follow-up (auto)</th>
-      </tr></thead>
-      <tbody></tbody>
-    </table>
-    <p class="chart-note">Illustrative claims, not real patients. In the real sheet these four fields are the only thing reps edit. Everything else arrives read-only.</p>
-  </div>
-</section>
-
-<!-- ============ 5. ARCHIVE + CHANGELOG ============ -->
-<section id="loop" data-nav="Daily archive → changelog">
-  <span class="kicker rv">4 · The part you can't see in the sheet</span>
-  <h2 class="rv">Every night we photograph the list. At month end, code compares the photos and writes down what changed.</h2>
-  <p class="lead rv d1">
     This is how productivity gets measured without anyone self-reporting. Run the simulation:
     watch a rep work one claim across a month, the nightly archive collect its snapshots,
     and the month-end build compress it all into one change-log line with computed totals.
@@ -710,9 +667,48 @@
   </p>
 </section>
 
-<!-- ============ 6. WHAT IT TELLS US ============ -->
+<!-- ============ 4. PRIORITIZATION (part 3) ============ -->
+<section id="priority" data-nav="Prioritization">
+  <span class="kicker rv">3 · The prioritized queue</span>
+  <h2 class="rv">Every claim gets a priority number. Reps work top-down.</h2>
+  <p class="lead rv d1">The category encodes what we care about: <b>denials before silence, &gt;90 days first</b>, then underpayments and cleanup queues. By the time a rep opens their tab, the ordering decision is already made.</p>
+
+  <div class="card rv d2">
+    <h3 style="margin-bottom:12px;">The priority ladder</h3>
+    <div class="ladder">
+      <div class="lrow top"><span class="ln">1</span><div><b>Unpaid 91+, denied.</b> <span class="ld">The oldest denied claims. Worked first, every day.</span></div></div>
+      <div class="lrow"><span class="ln">2</span><div><b>Unpaid 61-90, denied.</b> <span class="ld">Denials next in line as they age.</span></div></div>
+      <div class="lrow"><span class="ln">3</span><div><b>Unpaid 60 or less, denied.</b> <span class="ld">Fresh denials, caught before they age.</span></div></div>
+      <div class="lrow"><span class="ln">4</span><div><b>Unpaid 91+, no response.</b> <span class="ld">The payer went silent months ago.</span></div></div>
+      <div class="lrow"><span class="ln">5</span><div><b>Unpaid 61-90, no response.</b> <span class="ld">Silence that's starting to age.</span></div></div>
+      <div class="lrow"><span class="ln">6</span><div><b>Unpaid 60 or less, no response.</b> <span class="ld">The bulk of the book. Most of these pay on their own without a touch.</span></div></div>
+      <div class="lrow"><span class="ln">7</span><div><b>Underpayment.</b> <span class="ld">Paid, but under the agreed rate.</span></div></div>
+      <div class="lrow"><span class="ln">8+</span><div><b>Cleanup queues.</b> <span class="ld">Credits, negative payments, and not-yet-billed, each with their own playbook.</span></div></div>
+    </div>
+    <div class="chart-note">Denials outrank silence, and older outranks newer. A rep opens their tab and works from the top.</div>
+  </div>
+
+  <h3 class="rv" style="margin-top:36px;">Try it: the sheet enforces the playbook</h3>
+  <p class="rv d1" style="font-size:14.5px;color:var(--ink-2);max-width:66ch;">
+    Reps type almost nothing. Pick a status below and watch two rules fire: the dropdown only offers
+    statuses valid for that claim's category, and the follow-up date sets itself from the
+    status's built-in timeline (records requested means check back in 4 days, an appeal means 30).
+  </p>
+
+  <div class="card rv d2" style="overflow-x:auto;">
+    <table class="demo-table" id="demoTable">
+      <thead><tr>
+        <th>Claim</th><th>Payer</th><th style="text-align:right">Outstanding</th><th>Priority</th><th>Issue</th><th>Status (you pick)</th><th>Follow-up (auto)</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="chart-note">Illustrative claims, not real patients. In the real sheet these four fields are the only thing reps edit. Everything else arrives read-only.</p>
+  </div>
+</section>
+
+<!-- ============ 5. WHAT IT TELLS US ============ -->
 <section id="measure" data-nav="What it tells us">
-  <span class="kicker rv">5 · What comes out the other side</span>
+  <span class="kicker rv">4 · What comes out the other side</span>
   <h2 class="rv">Measuring the work in dollars</h2>
   <p class="lead rv d1">Every touch and every change in dollars is captured, so the reporting can be cut four ways:</p>
 
@@ -739,7 +735,7 @@
 
 <!-- ============ 7. FUTURE STATE ============ -->
 <section id="future" data-nav="Future state">
-  <span class="kicker rv">6 · Where this goes next</span>
+  <span class="kicker rv">5 · Where this goes next</span>
   <h2 class="rv">After a year of running it, we know what to build next.</h2>
   <p class="lead rv d1">
     Five opportunities we'd like Raymond's read on, ordered roughly by how directly they serve
@@ -838,9 +834,10 @@
 
 <!-- ============ 8. CLOSING ============ -->
 <section id="close" data-nav="Discussion">
-  <span class="kicker rv">7 · Discussion</span>
+  <span class="kicker rv">6 · Discussion</span>
   <h2 class="rv">Over to Raymond</h2>
   <p class="lead rv d1">One year of production behind us; the questions on the table:</p>
+
   <div class="ask-grid">
     <div class="card rv d1"><h3>Which future-state items matter most?</h3><p style="font-size:13.5px;color:var(--ink-2);">Especially the bad-debt reporting lens (#1) as the path to 3.5%.</p></div>
     <div class="card rv d2"><h3>Internal vs. Equalize measurement</h3><p style="font-size:13.5px;color:var(--ink-2);">Should this tool become the standard yardstick under Scott &amp; Eric's breakout views?</p></div>
@@ -901,7 +898,7 @@ const plCaps=[
   "Code on a server joins the five feeds into one row per claim, and the mapping rulebook categorizes every row: denial codes to categories, payers to buckets, rebills keep their identity.",
   "The working list itself: everything five systems knew about a claim, gathered into one row a rep can act on. The same list also feeds AR and denial reporting.",
   "The list deals out into 16 queues; each rep works their tab top-down. Every night the archive takes a complete copy of every queue.",
-  "At month end, code compares the nightly copies and writes one line per claim. Productivity dashboards update from there."
+  "At month end, code compares the nightly copies and writes one line per claim. Productivity dashboards update from there. The simulation below shows it happening to one claim."
 ];
 const PL_IDLE='Use <b>Next</b> and <b>Back</b> (or the ← → keys) to walk the pipeline one stage at a time.';
 const plSec=document.getElementById('pipeline');
