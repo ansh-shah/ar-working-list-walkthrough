@@ -127,42 +127,173 @@
   .one-list small{display:block; font-weight:400; opacity:.85; font-size:12.5px; margin-top:4px;}
   .pains{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:30px;}
 
-  /* ============ PIPELINE ============ */
-  .pipe{
-    display:flex; gap:0; align-items:stretch; margin-top:26px; overflow-x:auto;
-    padding:10px 2px 18px;
+  /* ============ PIPELINE (stepped stages) ============ */
+  .pl-controls{display:flex; gap:10px; margin-top:16px; align-items:center; flex-wrap:wrap;}
+  .pl-controls .hint{font-size:12.5px; color:var(--muted);}
+  .pl-map{display:flex; align-items:stretch; margin-top:20px;}
+  .pl-node{
+    flex:1; text-align:center; font-size:12.5px; font-weight:700; padding:10px 8px;
+    border:1.5px solid var(--line); border-radius:10px; background:var(--surface);
+    color:var(--ink-2); cursor:pointer; transition:all .3s;
   }
-  .pcol{display:flex; flex-direction:column; gap:8px; justify-content:center; min-width:158px; flex:1;}
-  .pcol-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); text-align:center; margin-bottom:2px;}
-  .pnode{
-    background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius);
-    padding:9px 11px; font-size:12.5px; font-weight:600; text-align:center; cursor:pointer;
-    transition:all .25s; position:relative;
+  .pl-node small{display:block; font-weight:400; color:var(--muted); font-size:10.5px; margin-top:2px;}
+  .pl-node:hover{border-color:var(--accent);}
+  .pl-node.on{
+    border-color:var(--accent); background:var(--accent-soft); color:var(--ink);
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
   }
-  .pnode small{display:block; font-weight:400; color:var(--muted); font-size:11px; line-height:1.35; margin-top:2px;}
-  .pnode:hover{border-color:var(--accent);}
-  .pnode.hot{
-    border-color:var(--accent); background:var(--accent-soft);
-    box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  .pl-arrow{width:28px; display:flex; align-items:center; justify-content:center; color:var(--muted); flex-shrink:0;}
+  .pl-stagebox{
+    margin-top:14px; border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--surface-2); overflow:hidden; position:relative; height:312px;
   }
-  .pnode.sel{border-color:var(--accent); background:var(--accent-soft);}
-  .pnode.big{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); padding:16px 12px; font-size:13.5px;}
-  .pnode.big small{color:var(--accent-ink); opacity:.85;}
-  .pnode.big.hot{box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent);}
-  .plink{
-    display:flex; align-items:center; justify-content:center; min-width:30px; color:var(--muted);
-    font-size:19px; flex-shrink:0;
+  .pl-scene{position:absolute; left:50%; top:14px; transform:translateX(-50%); width:680px; height:284px;}
+  .pl-idle{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); font-size:14px; padding:0 30px; text-align:center; transition:opacity .45s;
   }
-  .plink.flow{color:var(--accent); animation:pulseArrow 1.4s infinite;}
-  @keyframes pulseArrow{0%,100%{opacity:.45}50%{opacity:1}}
-  .pipe-detail{
+  .pl-idle.off{opacity:0;}
+  .pl-vig{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s;}
+  .pl-vig.on{opacity:1;}
+  .pl-cap{
     margin-top:14px; min-height:74px; font-size:14.5px; color:var(--ink-2);
     border:1px solid var(--line); padding:12px 18px; background:var(--surface);
     border-radius:var(--radius); box-shadow:var(--shadow);
   }
-  .pipe-detail b{color:var(--ink);}
-  .pipe-controls{display:flex; gap:10px; margin-top:16px; align-items:center;}
-  .pipe-controls .hint{font-size:12.5px; color:var(--muted);}
+  .pl-cap b{color:var(--ink);}
+  @keyframes plIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;}}
+
+  /* stage 0: sources */
+  .pl-chip{
+    position:absolute; font-size:12px; font-weight:600; padding:7px 13px; border-radius:999px;
+    background:var(--surface); border:1px dashed var(--muted); color:var(--ink-2);
+    box-shadow:var(--shadow); opacity:0;
+  }
+  .pl-vig[data-v="0"] .pl-chip:nth-child(1){top:52px; left:40px;}
+  .pl-vig[data-v="0"] .pl-chip:nth-child(2){top:150px; left:130px;}
+  .pl-vig[data-v="0"] .pl-chip:nth-child(3){top:60px; left:290px;}
+  .pl-vig[data-v="0"] .pl-chip:nth-child(4){top:158px; left:400px;}
+  .pl-vig[data-v="0"] .pl-chip:nth-child(5){top:66px; left:490px;}
+  .pl-vig[data-v="0"].on .pl-chip{animation:plIn .6s cubic-bezier(.16,1,.3,1) forwards;}
+  .pl-vig[data-v="0"].on .pl-chip:nth-child(1){animation-delay:.1s;}
+  .pl-vig[data-v="0"].on .pl-chip:nth-child(2){animation-delay:.5s;}
+  .pl-vig[data-v="0"].on .pl-chip:nth-child(3){animation-delay:.9s;}
+  .pl-vig[data-v="0"].on .pl-chip:nth-child(4){animation-delay:1.3s;}
+  .pl-vig[data-v="0"].on .pl-chip:nth-child(5){animation-delay:1.7s;}
+
+  /* stage 1: the build joins them */
+  .pl-vig[data-v="1"] .pl-chip{opacity:1;}
+  .pl-vig[data-v="1"] .pl-chip:nth-child(1){top:52px; left:40px;}
+  .pl-vig[data-v="1"] .pl-chip:nth-child(2){top:150px; left:130px;}
+  .pl-vig[data-v="1"] .pl-chip:nth-child(3){top:60px; left:290px;}
+  .pl-vig[data-v="1"] .pl-chip:nth-child(4){top:158px; left:400px;}
+  .pl-vig[data-v="1"] .pl-chip:nth-child(5){top:66px; left:490px;}
+  .pl-vig[data-v="1"].on .pl-chip{animation:plMerge 1.5s cubic-bezier(.5,0,.2,1) .4s forwards;}
+  @keyframes plMerge{60%{opacity:1;} 100%{top:140px; left:290px; opacity:0; transform:scale(.4);}}
+  .pl-joinbar{
+    position:absolute; top:126px; left:150px; width:380px; padding:10px 16px; text-align:center;
+    background:var(--surface); border:1.5px solid var(--accent); border-radius:10px;
+    font-size:13px; font-weight:700; box-shadow:var(--shadow); opacity:0;
+  }
+  .pl-joinbar small{display:block; font-weight:400; color:var(--muted); font-size:11px;}
+  .pl-vig[data-v="1"].on .pl-joinbar{animation:plIn .7s ease-out 1.7s forwards;}
+
+  /* stage 2: before / after, what the rep sees */
+  .pl-before{position:absolute; top:10px; left:0; width:258px;}
+  .pl-before h4, .pl-aftercard h4{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 8px;
+  }
+  .pl-bf{
+    font-family:ui-monospace,Consolas,monospace; font-size:10.5px; padding:5px 9px;
+    border:1px dashed var(--muted); border-radius:7px; margin-bottom:6px;
+    background:var(--surface); color:var(--ink-2);
+  }
+  .pl-bf b{font-family:var(--font); font-size:10px; color:var(--ink); display:block;}
+  .pl-mid{position:absolute; top:124px; left:272px; font-size:26px; color:var(--accent);}
+  .pl-aftercard{
+    position:absolute; top:10px; left:322px; width:356px; padding:12px 16px;
+    background:var(--surface); border:1.5px solid var(--accent); border-radius:10px; box-shadow:var(--shadow);
+  }
+  .pl-af{
+    display:flex; justify-content:space-between; gap:10px; font-size:12px; padding:7px 0;
+    border-bottom:1px solid var(--line); color:var(--ink-2); opacity:0;
+  }
+  .pl-af:last-child{border-bottom:none;}
+  .pl-af b{color:var(--ink); font-weight:650; text-align:right;}
+  .pl-vig[data-v="2"].on .pl-af{animation:plIn .5s ease-out forwards;}
+  .pl-vig[data-v="2"].on .pl-af:nth-of-type(2){animation-delay:.25s;}
+  .pl-vig[data-v="2"].on .pl-af:nth-of-type(3){animation-delay:.5s;}
+  .pl-vig[data-v="2"].on .pl-af:nth-of-type(4){animation-delay:.75s;}
+  .pl-vig[data-v="2"].on .pl-af:nth-of-type(5){animation-delay:1s;}
+  .pl-pill{
+    font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:999px; white-space:nowrap;
+    background:color-mix(in srgb,var(--critical) 12%, var(--surface)); color:var(--critical);
+  }
+
+  /* stage 3: dealt into queues, archived nightly */
+  .pl-deckbar{
+    position:absolute; top:14px; left:210px; width:260px; padding:9px 14px; text-align:center;
+    font-size:12.5px; font-weight:700; background:var(--accent); color:var(--accent-ink);
+    border-radius:10px; box-shadow:var(--shadow);
+  }
+  .pl-deckbar small{display:block; font-weight:400; opacity:.85; font-size:10.5px;}
+  .pl-tab{
+    position:absolute; top:150px; width:200px; padding:9px 13px 11px; font-size:11.5px;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
+  }
+  .pl-tab b{display:block; font-size:11.5px; margin-bottom:5px;}
+  .pl-tab .mini{height:7px; border-radius:4px; background:var(--surface-2); margin-top:4px;}
+  .pl-tab:nth-of-type(2){left:10px;}
+  .pl-tab:nth-of-type(3){left:240px;}
+  .pl-tab:nth-of-type(4){left:470px;}
+  .pl-deal{
+    position:absolute; top:56px; left:310px; width:60px; height:12px; border-radius:6px;
+    background:var(--accent-soft); border:1px solid var(--accent); opacity:0;
+  }
+  .pl-vig[data-v="3"].on .pl-deal:nth-of-type(5){animation:plDeal1 .9s ease-out .4s forwards;}
+  .pl-vig[data-v="3"].on .pl-deal:nth-of-type(6){animation:plDeal2 .9s ease-out 1s forwards;}
+  .pl-vig[data-v="3"].on .pl-deal:nth-of-type(7){animation:plDeal3 .9s ease-out 1.6s forwards;}
+  @keyframes plDeal1{0%{opacity:1;} 100%{opacity:1; top:186px; left:70px;}}
+  @keyframes plDeal2{0%{opacity:1;} 100%{opacity:1; top:186px; left:300px;}}
+  @keyframes plDeal3{0%{opacity:1;} 100%{opacity:1; top:186px; left:530px;}}
+  .pl-camnote{
+    position:absolute; top:238px; left:190px; width:300px; text-align:center; font-size:12px;
+    color:var(--ink-2); opacity:0;
+  }
+  .pl-camnote svg{color:var(--good-text);}
+  .pl-vig[data-v="3"].on .pl-camnote{animation:plIn .6s ease-out 2.3s forwards;}
+
+  /* stage 4: month end */
+  .pl-cal{position:absolute; top:30px; left:190px; display:flex; gap:8px;}
+  .pl-day{
+    width:36px; height:36px; border-radius:8px; border:1px solid var(--line); background:var(--surface);
+    font-size:10px; display:flex; align-items:center; justify-content:center; color:var(--muted);
+  }
+  .pl-vig[data-v="4"].on .pl-day{animation:plSnap .5s ease-out forwards;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(1){animation-delay:.2s;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(2){animation-delay:.45s;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(3){animation-delay:.7s;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(4){animation-delay:.95s;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(5){animation-delay:1.2s;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(6){animation-delay:1.45s;}
+  .pl-vig[data-v="4"].on .pl-day:nth-child(7){animation-delay:1.7s;}
+  @keyframes plSnap{
+    50%{border-color:var(--good); box-shadow:0 0 0 3px color-mix(in srgb, var(--good) 25%, transparent);}
+    100%{border-color:var(--good); color:var(--good-text);}
+  }
+  .pl-tally{
+    position:absolute; top:120px; left:90px; width:500px; padding:12px 16px; font-size:12.5px;
+    background:var(--surface); border:1.5px solid var(--good); border-radius:10px; box-shadow:var(--shadow);
+    color:var(--ink-2); opacity:0;
+  }
+  .pl-tally b{color:var(--ink);}
+  .pl-vig[data-v="4"].on .pl-tally{animation:plIn .7s ease-out 2.1s forwards;}
+
+  .pl-scene{transform-origin:top center;}
+  @media(max-width:740px){
+    .pl-map{display:grid; grid-template-columns:repeat(2,1fr); gap:8px;}
+    .pl-arrow{display:none;}
+  }
 
   .chart-note{font-size:12.5px; color:var(--muted); margin-top:10px;}
 
@@ -338,7 +469,8 @@
     html{scroll-behavior:auto;}
     .rv{transition:none; transform:none; opacity:1;}
     .snapcard,.fu-chip,.fbody,.chev{transition:none;}
-    .plink.flow{animation:none;}
+    .pl-vig *{animation:none !important; transition:none !important;}
+    .pl-chip,.pl-joinbar,.pl-af,.pl-camnote,.pl-tally{opacity:1 !important;}
     .srv-dot.on{animation:none;}
     .sheet-mini .chg{animation:none;}
   }
@@ -400,51 +532,84 @@
 <section id="pipeline" data-nav="How data flows">
   <span class="kicker rv">2 · How the data flows</span>
   <h2 class="rv">From five raw feeds to one worked, measured list</h2>
-  <p class="lead rv d1">Click any box for a short description, or press play to follow a claim through the whole pipeline.</p>
+  <p class="lead rv d1">Each stage acts out what it actually does to the data. Step through with Back and Next, or click a stage on the map.</p>
 
-  <div class="pipe-controls rv d2">
-    <button class="primary" id="playPipe"><svg class="ic" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg> Follow a claim through</button>
-    <span class="hint" id="pipeHint">Each month this cycle runs end to end.</span>
+  <div class="pl-controls rv d2">
+    <button id="plPrev"><svg class="ic" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Back</button>
+    <button class="primary" id="plNext">Next <svg class="ic" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    <span class="hint">or use the ← → keys while this section is on screen; ↑ ↓ still move between sections</span>
   </div>
 
-  <div class="pipe rv d2" id="pipe">
-    <div class="pcol">
-      <div class="pcol-title">Sources</div>
-      <div class="pnode" data-step="0" data-info="<b>CentralReach billing detail.</b> Every claim we submitted: amounts billed, dates of service, the payer it went to, the rendering provider.">CR claim data<small>billing detail</small></div>
-      <div class="pnode" data-step="0" data-info="<b>CentralReach demographics.</b> Patient and guardian details.">CR demographics</div>
-      <div class="pnode" data-step="0" data-info="<b>Salesforce.</b> The case side: region, center, account status, assigned BCBA, program dates.">Salesforce cases</div>
-      <div class="pnode" data-step="0" data-info="<b>Payer denials.</b> Denial codes, reasons, and dates straight from payer responses.">Denial feed</div>
-      <div class="pnode" data-step="0" data-info="<b>Office Ally rejections.</b> Claims that bounced at Office Ally before the payer ever saw them.">Office Ally rejections</div>
-    </div>
-    <div class="plink" data-flow="1">→</div>
-    <div class="pcol">
-      <div class="pcol-title">Our logic</div>
-      <div class="pnode" data-step="1" data-info="<b>The monthly build.</b> Code we run on a server joins all five feeds into one row per claim, then applies our mapping tables (denial reason to category, payer to bucket, claim ID continuity across rebills) so every claim arrives categorized and consistent.">Monthly build<small>joins + enriches every claim</small></div>
-      <div class="pnode" data-step="1" data-info="<b>Mapping tables.</b> The rulebook we maintain: how denial reasons group into categories, how payer plans roll up, which statuses count as real work, and how a rebilled claim keeps its identity.">Mapping rules<small>our rulebook</small></div>
-    </div>
-    <div class="plink" data-flow="2">→</div>
-    <div class="pcol">
-      <div class="pcol-title">The product</div>
-      <div class="pnode big" data-step="2" data-info="<b>The AR Working List.</b> One row for every open claim, each with a priority category, a denial category, aging, and dollars outstanding. Sorted in the order we want it worked.">AR Working List<small>every open claim, priority-sorted</small></div>
-      <div class="pnode" data-step="2" data-info="<b>Downstream reporting.</b> The same list also feeds aging summaries, denial resolve rates, payment/collection summaries, and the denial forecast.">Also feeds AR &amp; denial reporting</div>
-    </div>
-    <div class="plink" data-flow="3">→</div>
-    <div class="pcol">
-      <div class="pcol-title">Daily work</div>
-      <div class="pnode" data-step="3" data-info="<b>The team's workspace.</b> Each rep gets their own tab showing only their claims. They record a date worked, a status, and notes per touch, and the follow-up date fills itself in based on the status chosen.">16 rep queues<small>each rep sees their slice</small></div>
-      <div class="pnode" data-step="3" data-info="<b>Nightly snapshot.</b> Every night an automated process takes a complete copy of the workspace, so we have a photo of the list for every day of the month.">Nightly archive <svg class="ic" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-    </div>
-    <div class="plink" data-flow="4">→</div>
-    <div class="pcol">
-      <div class="pcol-title">Measurement</div>
-      <div class="pnode" data-step="4" data-info="<b>Month-end changelog.</b> Code compares each day's snapshot to the day before and condenses a month of copies into one line per claim: every status change, date-stamped, plus touch counts and dollars collected vs. the start of the month.">Change log build<small>a month → one line per claim</small></div>
-      <div class="pnode" data-step="4" data-info="<b>Productivity reporting.</b> Per-rep dashboards: claims assigned, touches, follow-ups, and dollars moved per follow-up, plus summaries by type of work.">Productivity dashboards</div>
+  <div class="pl-map rv d2" id="plMap">
+    <div class="pl-node" data-s="0">Sources<small>5 feeds</small></div>
+    <div class="pl-arrow">→</div>
+    <div class="pl-node" data-s="1">Monthly build<small>join + mapping rules</small></div>
+    <div class="pl-arrow">→</div>
+    <div class="pl-node" data-s="2">The working list<small>one row per claim</small></div>
+    <div class="pl-arrow">→</div>
+    <div class="pl-node" data-s="3">Daily work<small>16 queues · nightly archive</small></div>
+    <div class="pl-arrow">→</div>
+    <div class="pl-node" data-s="4">Measurement<small>changelog + dashboards</small></div>
+  </div>
+
+  <div class="pl-stagebox rv d3">
+    <div class="pl-idle" id="plIdle">Each stage plays a short scene here. Press Next to start.</div>
+    <div class="pl-scene">
+      <div class="pl-vig" data-v="0">
+        <span class="pl-chip">CR billing detail</span>
+        <span class="pl-chip">CR demographics</span>
+        <span class="pl-chip">Salesforce cases</span>
+        <span class="pl-chip">Denial feed</span>
+        <span class="pl-chip">Office Ally rejections</span>
+      </div>
+      <div class="pl-vig" data-v="1">
+        <span class="pl-chip">CR billing detail</span>
+        <span class="pl-chip">CR demographics</span>
+        <span class="pl-chip">Salesforce cases</span>
+        <span class="pl-chip">Denial feed</span>
+        <span class="pl-chip">Office Ally rejections</span>
+        <div class="pl-joinbar">One row per claim<small>joined and categorized by the mapping rulebook</small></div>
+      </div>
+      <div class="pl-vig" data-v="2">
+        <div class="pl-before">
+          <h4>What five systems held</h4>
+          <div class="pl-bf"><b>CR billing</b>61-284-102 | 4890.00 | 02/14</div>
+          <div class="pl-bf"><b>CR demographics</b>pt_id 88213 | guardian on file</div>
+          <div class="pl-bf"><b>Salesforce</b>ATX-N | status: ACTIVE</div>
+          <div class="pl-bf"><b>Denial feed</b>CO-197 | 03/02</div>
+          <div class="pl-bf"><b>Office Ally</b>no rejection</div>
+        </div>
+        <div class="pl-mid">→</div>
+        <div class="pl-aftercard">
+          <h4>The one row a rep works</h4>
+          <div class="pl-af"><span>Claim</span><b>61-284-102 · BCBS TX · $4,890</b></div>
+          <div class="pl-af"><span>Patient / center</span><b>On the row · Austin North</b></div>
+          <div class="pl-af"><span>Issue</span><b>Denial · Authorization</b></div>
+          <div class="pl-af"><span>Aging</span><b>112 days outstanding</b></div>
+          <div class="pl-af"><span>Priority</span><span class="pl-pill">1 · top of queue</span></div>
+        </div>
+      </div>
+      <div class="pl-vig" data-v="3">
+        <div class="pl-deckbar">The working list<small>every open claim, priority-sorted</small></div>
+        <div class="pl-tab"><b>Rep 1</b><div class="mini"></div><div class="mini"></div></div>
+        <div class="pl-tab"><b>Rep 2</b><div class="mini"></div><div class="mini"></div></div>
+        <div class="pl-tab"><b>Equalize RCM</b><div class="mini"></div><div class="mini"></div></div>
+        <div class="pl-deal"></div><div class="pl-deal"></div><div class="pl-deal"></div>
+        <div class="pl-camnote"><svg class="ic" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Every queue photographed, every night.</div>
+      </div>
+      <div class="pl-vig" data-v="4">
+        <div class="pl-cal">
+          <div class="pl-day">M 4</div><div class="pl-day">T 5</div><div class="pl-day">W 6</div>
+          <div class="pl-day">T 7</div><div class="pl-day">F 8</div><div class="pl-day">M 11</div><div class="pl-day">…</div>
+        </div>
+        <div class="pl-tally"><b>A month of nightly copies becomes one line per claim:</b><br>
+          every status change date-stamped, touches counted, dollars compared to the start of the month.</div>
+      </div>
     </div>
   </div>
 
-  <div class="pipe-detail rv d3" id="pipeDetail">
-    <b>Tip:</b> today this whole cycle repeats monthly. One of the future-state questions is how much faster we can run it.
-  </div>
+  <div class="pl-cap rv d3" id="plCap"></div>
+  <p class="note rv d3"><b>Tip:</b> today this whole cycle repeats monthly. One of the future-state questions is how much faster we can run it.</p>
 </section>
 
 <!-- ============ 4. PRIORITIZATION ============ -->
@@ -737,43 +902,57 @@ document.querySelectorAll('.fhead').forEach(h=>h.addEventListener('click',()=>{
   h.parentElement.classList.toggle('open');
 }));
 
-/* ================= PIPELINE ================= */
-const pipeDetail=document.getElementById('pipeDetail');
-const pnodes=[...document.querySelectorAll('.pnode')];
-pnodes.forEach(n=>n.addEventListener('click',()=>{
-  pnodes.forEach(x=>x.classList.remove('sel'));
-  n.classList.add('sel');
-  pipeDetail.innerHTML=n.dataset.info;
-}));
-const playBtn=document.getElementById('playPipe');
-const pipeHint=document.getElementById('pipeHint');
-let pipeTimer=null;
-playBtn.addEventListener('click',()=>{
-  if(pipeTimer)return;
-  const steps=[
-    {s:0,t:'Day 1 of the month: the billing, case, denial, and rejection pulls land.'},
-    {s:1,t:'Our build code joins the feeds and applies the mapping rulebook.'},
-    {s:2,t:'Out comes the working list: every open claim, priority-ranked.'},
-    {s:3,t:'Reps work their queues daily; every night an automated copy is archived.'},
-    {s:4,t:'Month end: code diffs the daily copies into a changelog, and dashboards update.'}
-  ];
-  let i=0;
-  playBtn.disabled=true;
-  const tick=()=>{
-    pnodes.forEach(n=>n.classList.remove('hot'));
-    document.querySelectorAll('.plink').forEach(l=>l.classList.remove('flow'));
-    if(i>=steps.length){
-      pipeHint.textContent='…and the next month, it runs again.';
-      playBtn.disabled=false; pipeTimer=null; return;
-    }
-    pnodes.filter(n=>+n.dataset.step===steps[i].s).forEach(n=>n.classList.add('hot'));
-    const link=document.querySelector('.plink[data-flow="'+steps[i].s+'"]');
-    if(link)link.classList.add('flow');
-    pipeHint.textContent=steps[i].t;
-    i++; pipeTimer=setTimeout(tick,1900);
-  };
-  tick();
+/* ================= PIPELINE STEPPER ================= */
+const plCaps=[
+  "Five feeds land at the start of the month: billing and demographics from CentralReach, cases from Salesforce, payer denials, and Office Ally rejections.",
+  "Code on a server joins the five feeds into one row per claim, and the mapping rulebook categorizes every row: denial codes to categories, payers to buckets, rebills keep their identity.",
+  "The working list itself: everything five systems knew about a claim, gathered into one row a rep can act on. The same list also feeds AR and denial reporting.",
+  "The list deals out into 16 queues; each rep works their tab top-down. Every night the archive takes a complete copy of every queue.",
+  "At month end, code compares the nightly copies and writes one line per claim. Productivity dashboards update from there."
+];
+const PL_IDLE='Use <b>Next</b> and <b>Back</b> (or the ← → keys) to walk the pipeline one stage at a time.';
+const plSec=document.getElementById('pipeline');
+const plCapEl=document.getElementById('plCap');
+const plIdleEl=document.getElementById('plIdle');
+const plNodes=[...document.querySelectorAll('.pl-node')];
+const plVigs=[...document.querySelectorAll('.pl-vig')];
+const plPrev=document.getElementById('plPrev');
+const plNext=document.getElementById('plNext');
+let plI=-1;
+function plGo(n){
+  plI=Math.max(-1,Math.min(plCaps.length-1,n));
+  plNodes.forEach((el,j)=>el.classList.toggle('on',j===plI));
+  plVigs.forEach(v=>{
+    const on=+v.dataset.v===plI;
+    if(on&&!v.classList.contains('on'))void v.offsetWidth;
+    v.classList.toggle('on',on);
+  });
+  plIdleEl.classList.toggle('off',plI>=0);
+  plCapEl.innerHTML=plI<0?PL_IDLE:'<b>Stage '+(plI+1)+' of '+plCaps.length+'</b> · '+plCaps[plI];
+  plPrev.disabled=plI<0;
+  plNext.disabled=plI>=plCaps.length-1;
+}
+plPrev.addEventListener('click',()=>plGo(plI-1));
+plNext.addEventListener('click',()=>plGo(plI+1));
+plNodes.forEach((el,j)=>el.addEventListener('click',()=>plGo(j)));
+document.addEventListener('keydown',e=>{
+  if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+  if(/SELECT|INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  const r=plSec.getBoundingClientRect(), mid=innerHeight/2;
+  if(r.top>mid||r.bottom<mid)return;
+  e.preventDefault();
+  plGo(e.key==='ArrowRight'?plI+1:plI-1);
 });
+function plFit(){
+  const box=document.querySelector('.pl-stagebox');
+  const scene=document.querySelector('.pl-scene');
+  const s=Math.min(1,(box.clientWidth-24)/680);
+  scene.style.transform='translateX(-50%) scale('+s+')';
+  box.style.height=Math.round(284*s+28)+'px';
+}
+window.addEventListener('resize',plFit);
+plFit();
+plGo(-1);
 
 /* ================= WORKLIST DEMO ================= */
 const SLA={'Medical Records Requested':4,'Negotiation':7,'Authorization Issue':10,
